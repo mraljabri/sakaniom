@@ -1,0 +1,3 @@
+{"name":"Mohammed Al Jabri","email":"mraljabri97@gmail.com","password":"$2a$10$iaeoekpejnesDcmHw74SlemrLZELdJCXlHz4fv5kLjbt11ej6D8OO","phone":null,"role":"creator","createdAt":"2026-05-08T19:29:15.346Z","_id":"M5KGPFwGsktxmmY9"}
+{"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}
+{"$$indexCreated":{"fieldName":"email","unique":true}}
