@@ -16,7 +16,7 @@ function Section({ title, children }) {
 
 export default function CreateListingPage() {
   const { user } = useAuth();
-  const { t, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS } = useLanguage();
+  const { t, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,7 +26,8 @@ export default function CreateListingPage() {
   const [form, setForm] = useState({
     title: '', description: '', property_type: 'Apartment', city: 'Muscat',
     neighborhood: '', price: '', price_period: 'month', bedrooms: '1', bathrooms: '1',
-    area_sqm: '', furnished: 'unfurnished',
+    area_sqm: '', furnished: 'unfurnished', contract_period: 'no_contract',
+    family_status: 'both', payment_method: 'cash',
     contact_name: user?.name || '', contact_phone: '', contact_email: user?.email || '',
   });
   const [photos, setPhotos] = useState([]);
@@ -150,6 +151,29 @@ export default function CreateListingPage() {
             <div className="col-span-2 sm:col-span-1">
               <label className="label">{t('field_area_sqm')}</label>
               <input className="input" type="number" placeholder={t('field_area_sqm_ph')} value={form.area_sqm} onChange={set('area_sqm')} min="1" />
+            </div>
+          </div>
+        </Section>
+
+        <Section title={t('section_terms')}>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="label">{t('field_contract')}</label>
+              <select className="input" value={form.contract_period} onChange={set('contract_period')}>
+                {CONTRACT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="label">{t('field_family')}</label>
+              <select className="input" value={form.family_status} onChange={set('family_status')}>
+                {FAMILY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="label">{t('field_payment')}</label>
+              <select className="input" value={form.payment_method} onChange={set('payment_method')}>
+                {PAYMENT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
             </div>
           </div>
         </Section>

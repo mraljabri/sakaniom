@@ -105,7 +105,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', authenticateToken, requireCreator,
   upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'videos', maxCount: 2 }]),
   async (req, res) => {
-    const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contact_name, contact_phone, contact_email } = req.body;
+    const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email } = req.body;
 
     if (!title || !property_type || !city || !price || bedrooms == null || bathrooms == null || !contact_name || !contact_phone)
       return res.status(400).json({ error: 'Please fill in all required fields.' });
@@ -124,6 +124,9 @@ router.post('/', authenticateToken, requireCreator,
         bedrooms: Number(bedrooms), bathrooms: Number(bathrooms),
         area_sqm: area_sqm ? Number(area_sqm) : null,
         furnished: furnished || 'unfurnished',
+        contract_period: contract_period || 'no_contract',
+        family_status: family_status || 'both',
+        payment_method: payment_method || 'cash',
         contact_name: contact_name.trim(), contact_phone: contact_phone.trim(),
         contact_email: contact_email?.trim() || '',
         photos, photoPublicIds, videos, videoPublicIds,
@@ -145,12 +148,15 @@ router.put('/:id', authenticateToken, requireCreator,
       const listing = await Listing.findOne({ _id: req.params.id, creatorId: req.user.id });
       if (!listing) return res.status(404).json({ error: 'Listing not found or access denied.' });
 
-      const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contact_name, contact_phone, contact_email } = req.body;
+      const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email } = req.body;
 
       if (title)         listing.title         = title.trim();
       if (description != null) listing.description = description.trim();
       if (property_type) listing.property_type = property_type;
       if (city)          listing.city          = city;
+      if (contract_period) listing.contract_period = contract_period;
+      if (family_status)   listing.family_status   = family_status;
+      if (payment_method)  listing.payment_method  = payment_method;
       if (neighborhood != null) listing.neighborhood = neighborhood.trim();
       if (price)         listing.price         = Number(price);
       if (price_period)  listing.price_period  = price_period;

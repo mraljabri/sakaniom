@@ -184,6 +184,26 @@ const translations = {
     video_upload_label: 'Click to upload videos',
     video_upload_hint: 'MP4, MOV, WebM — max 100MB each',
     cover_label: 'Cover',
+    section_terms: 'Terms & Requirements',
+    field_contract: 'Contract Period',
+    field_family: 'Suitable For',
+    field_payment: 'Payment Method',
+    contract_no_contract: 'No Contract Required',
+    contract_1_month: '1 Month',
+    contract_3_months: '3 Months',
+    contract_6_months: '6 Months',
+    contract_1_year: '1 Year',
+    contract_2_years: '2 Years',
+    family_both: 'Families & Singles',
+    family_family: 'Families Only',
+    family_non_family: 'Singles / Bachelors',
+    payment_cash: 'Cash',
+    payment_check: 'Cheque',
+    payment_bank_transfer: 'Bank Transfer',
+    payment_other: 'Other',
+    detail_contract: 'Contract',
+    detail_family: 'Suitable For',
+    detail_payment: 'Payment',
     section_contact: 'Contact Details',
     field_contact_name: 'Contact Name',
     field_contact_name_ph: 'Your name or agent name',
@@ -246,7 +266,7 @@ const translations = {
 
   ar: {
     // Site
-    site_name: 'سكاني عُمان',
+    site_name: 'سكني عُمان',
 
     // Navbar
     nav_browse: 'تصفح الإعلانات',
@@ -281,7 +301,7 @@ const translations = {
     view_all: 'عرض الكل ←',
     view_all_btn: 'عرض جميع الإعلانات',
 
-    how_title: 'كيف يعمل سكاني عُمان',
+    how_title: 'كيف يعمل سكني عُمان',
     how_sub: 'عملية إيجار بسيطة وشفافة',
     how_step1_title: 'أنشئ حسابك',
     how_step1_desc: 'سجّل كمستأجر لتصفح الإعلانات، أو كمُعلن لنشر عقارك.',
@@ -293,7 +313,7 @@ const translations = {
     cta_title: 'هل لديك عقار للإيجار؟',
     cta_sub: 'أنشئ حساباً مجانياً وانشر إعلانك في دقائق. تواصل مع آلاف المستأجرين المحتملين في عُمان.',
     cta_btn: 'انشر عقارك مجاناً',
-    footer: '© {year} سكاني عُمان — إيجارات العقارات في عُمان. جميع الحقوق محفوظة.',
+    footer: '© {year} سكني عُمان — إيجارات العقارات في عُمان. جميع الحقوق محفوظة.',
 
     // Listings page
     page_listings_title: 'إعلانات الإيجار',
@@ -373,7 +393,7 @@ const translations = {
 
     // Signup
     signup_title: 'إنشاء حساب جديد',
-    signup_sub: 'انضم إلى سكاني عُمان مجاناً',
+    signup_sub: 'انضم إلى سكني عُمان — مجاناً',
     role_renter_label: 'أنا مستأجر',
     role_renter_desc: 'تصفح العقارات وابحث',
     role_landlord_label: 'أنا مالك / مُعلن',
@@ -394,7 +414,7 @@ const translations = {
 
     // Login
     login_title: 'مرحباً بعودتك',
-    login_sub: 'سجّل دخولك إلى حساب سكاني عُمان',
+    login_sub: 'سجّل دخولك إلى حساب سكني عُمان',
     field_password_login_ph: 'كلمة المرور',
     btn_login: 'تسجيل الدخول',
     btn_logging: 'جارٍ تسجيل الدخول...',
@@ -403,7 +423,7 @@ const translations = {
 
     // Create listing
     create_title: 'نشر إعلان جديد',
-    create_sub: 'أدخل التفاصيل أدناه لنشر عقارك على سكاني عُمان.',
+    create_sub: 'أدخل التفاصيل أدناه لنشر عقارك على سكني عُمان.',
     section_property: 'معلومات العقار',
     field_listing_title: 'عنوان الإعلان',
     field_listing_title_ph: 'مثال: شقة واسعة 2 غرفة في القرم',
@@ -429,6 +449,26 @@ const translations = {
     video_upload_label: 'انقر لرفع فيديو',
     video_upload_hint: 'MP4، MOV، WebM — بحد أقصى 100MB لكل فيديو',
     cover_label: 'الغلاف',
+    section_terms: 'الشروط والمتطلبات',
+    field_contract: 'مدة العقد',
+    field_family: 'مناسب لـ',
+    field_payment: 'طريقة الدفع',
+    contract_no_contract: 'بدون عقد',
+    contract_1_month: 'شهر واحد',
+    contract_3_months: '3 أشهر',
+    contract_6_months: '6 أشهر',
+    contract_1_year: 'سنة واحدة',
+    contract_2_years: 'سنتان',
+    family_both: 'عائلات وعزاب',
+    family_family: 'عائلات فقط',
+    family_non_family: 'عزاب فقط',
+    payment_cash: 'نقداً',
+    payment_check: 'شيك',
+    payment_bank_transfer: 'تحويل بنكي',
+    payment_other: 'أخرى',
+    detail_contract: 'العقد',
+    detail_family: 'مناسب لـ',
+    detail_payment: 'الدفع',
     section_contact: 'معلومات التواصل',
     field_contact_name: 'اسم جهة الاتصال',
     field_contact_name_ph: 'اسمك أو اسم الوكيل',

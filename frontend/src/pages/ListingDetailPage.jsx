@@ -134,6 +134,9 @@ export default function ListingDetailPage() {
               {detail('🚿', t('detail_baths'),      listing.bathrooms)}
               {listing.area_sqm && detail('📐', t('detail_area'), `${listing.area_sqm} m²`)}
               {detail('🛋', t('detail_furnished'),  furnishedLabel)}
+              {listing.contract_period && detail('📋', t('detail_contract'), t(`contract_${listing.contract_period}`))}
+              {listing.family_status   && detail('👨‍👩‍👧', t('detail_family'),   t(`family_${listing.family_status}`))}
+              {listing.payment_method  && detail('💳', t('detail_payment'),  t(`payment_${listing.payment_method}`))}
               {detail('📅', t('detail_listed'),     new Date(listing.created_at || listing.createdAt).toLocaleDateString('en-OM', { year: 'numeric', month: 'long', day: 'numeric' }))}
             </div>
           </div>

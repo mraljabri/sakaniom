@@ -6,18 +6,16 @@ const User = require('../models/User');
 const { JWT_SECRET } = require('../middleware/auth');
 
 router.post('/signup', async (req, res) => {
-  const { name, email, password, phone, role } = req.body;
+  const { name, email, password, phone } = req.body;
 
-  if (!name || !email || !password || !role)
-    return res.status(400).json({ error: 'Name, email, password, and role are required.' });
-  if (!['creator', 'user'].includes(role))
-    return res.status(400).json({ error: 'Role must be "creator" or "user".' });
+  if (!name || !email || !password)
+    return res.status(400).json({ error: 'Name, email, and password are required.' });
   if (password.length < 6)
     return res.status(400).json({ error: 'Password must be at least 6 characters.' });
 
   try {
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ name: name.trim(), email, password: hashed, phone: phone || null, role });
+    const user = await User.create({ name: name.trim(), email, password: hashed, phone: phone || null, role: 'creator' });
 
     const token = jwt.sign(
       { id: user._id, email: user.email, name: user.name, role: user.role, isAdmin: user.isAdmin },

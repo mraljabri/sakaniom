@@ -31,9 +31,9 @@ export default function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/listings" element={<ListingsPage />} />
         <Route path="/listings/:id" element={<ListingDetailPage />} />
-        <Route path="/dashboard" element={<ProtectedRoute requireCreator><DashboardPage /></ProtectedRoute>} />
-        <Route path="/create-listing" element={<ProtectedRoute requireCreator><CreateListingPage /></ProtectedRoute>} />
-        <Route path="/edit-listing/:id" element={<ProtectedRoute requireCreator><EditListingPage /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/create-listing" element={<ProtectedRoute><CreateListingPage /></ProtectedRoute>} />
+        <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

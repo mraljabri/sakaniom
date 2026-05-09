@@ -8,7 +8,7 @@ export default function SignupPage() {
   const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -16,13 +16,12 @@ export default function SignupPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.role) return setError('Please select your account type.');
     setError('');
     setLoading(true);
     try {
       const { data } = await axios.post('/api/auth/signup', form);
       login(data.token, data.user);
-      navigate(data.user.role === 'creator' ? '/dashboard' : '/listings');
+      navigate('/listings');
     } catch (err) {
       setError(err.response?.data?.error || 'Signup failed. Please try again.');
     } finally {
@@ -42,21 +41,6 @@ export default function SignupPage() {
             </div>
             <h1 className="text-2xl font-bold text-gray-900">{t('signup_title')}</h1>
             <p className="text-gray-500 text-sm mt-1">{t('signup_sub')}</p>
-          </div>
-
-          {/* Role selector */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {[
-              { val: 'user',    label: t('role_renter_label'),   desc: t('role_renter_desc'),   icon: '🔍' },
-              { val: 'creator', label: t('role_landlord_label'), desc: t('role_landlord_desc'), icon: '🏠' },
-            ].map(r => (
-              <button key={r.val} type="button" onClick={() => setForm(f => ({ ...f, role: r.val }))}
-                className={`p-4 rounded-xl border-2 text-start transition-all ${form.role === r.val ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                <span className="text-2xl block mb-1">{r.icon}</span>
-                <span className="font-semibold text-gray-900 text-sm block">{r.label}</span>
-                <span className="text-xs text-gray-500">{r.desc}</span>
-              </button>
-            ))}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

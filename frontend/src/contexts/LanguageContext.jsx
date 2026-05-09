@@ -54,6 +54,28 @@ export function LanguageProvider({ children }) {
     { value: 'day',   label: t('period_day') },
   ];
 
+  const CONTRACT_OPTIONS = [
+    { value: 'no_contract', label: t('contract_no_contract') },
+    { value: '1_month',     label: t('contract_1_month') },
+    { value: '3_months',    label: t('contract_3_months') },
+    { value: '6_months',    label: t('contract_6_months') },
+    { value: '1_year',      label: t('contract_1_year') },
+    { value: '2_years',     label: t('contract_2_years') },
+  ];
+
+  const FAMILY_OPTIONS = [
+    { value: 'both',       label: t('family_both') },
+    { value: 'family',     label: t('family_family') },
+    { value: 'non_family', label: t('family_non_family') },
+  ];
+
+  const PAYMENT_OPTIONS = [
+    { value: 'cash',          label: t('payment_cash') },
+    { value: 'check',         label: t('payment_check') },
+    { value: 'bank_transfer', label: t('payment_bank_transfer') },
+    { value: 'other',         label: t('payment_other') },
+  ];
+
   const FURNISHED_OPTIONS = [
     { value: 'furnished',      label: t('furnished') },
     { value: 'semi-furnished', label: t('semi_furnished') },
@@ -61,7 +83,7 @@ export function LanguageProvider({ children }) {
   ];
 
   return (
-    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS }}>
+    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS }}>
       {children}
     </LanguageContext.Provider>
   );

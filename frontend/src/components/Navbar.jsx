@@ -52,7 +52,7 @@ export default function Navbar() {
           {/* Desktop Nav links */}
           <div className="hidden md:flex items-center gap-6">
             {navLink('/listings', t('nav_browse'))}
-            {user && isCreator && navLink('/dashboard', t('nav_dashboard'))}
+            {user && navLink('/dashboard', t('nav_dashboard'))}
             {user?.isAdmin && navLink('/admin', t('nav_admin'))}
           </div>
 
@@ -61,9 +61,7 @@ export default function Navbar() {
             <LangToggle />
             {user ? (
               <div className="flex items-center gap-3">
-                {isCreator && (
-                  <Link to="/create-listing" className="btn-primary text-sm">{t('nav_post')}</Link>
-                )}
+                <Link to="/create-listing" className="btn-primary text-sm">{t('nav_post')}</Link>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
                     <span className="text-primary-700 font-semibold text-sm">{user.name[0].toUpperCase()}</span>
@@ -97,7 +95,7 @@ export default function Navbar() {
         {menuOpen && (
           <div className="md:hidden py-3 border-t border-gray-100 flex flex-col gap-3">
             <Link to="/listings" onClick={() => setMenuOpen(false)} className="text-gray-700 font-medium py-1">{t('nav_browse')}</Link>
-            {user && isCreator && (
+            {user && (
               <>
                 <Link to="/dashboard" onClick={() => setMenuOpen(false)} className="text-gray-700 font-medium py-1">{t('nav_dashboard')}</Link>
                 <Link to="/create-listing" onClick={() => setMenuOpen(false)} className="text-primary-600 font-semibold py-1">{t('nav_post')}</Link>
