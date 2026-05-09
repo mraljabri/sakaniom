@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { mediaUrl, PLACEHOLDER } from '../utils/media';
 
-// Section must be outside the component to avoid re-mount on every keystroke
 function Section({ title, children }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
@@ -14,41 +13,63 @@ function Section({ title, children }) {
   );
 }
 
-export default function CreateListingPage() {
-  const { user } = useAuth();
+export default function EditListingPage() {
+  const { id } = useParams();
   const { t, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS } = useLanguage();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [error, setError] = useState('');
-  const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [existingPhotos, setExistingPhotos] = useState([]);
+  const [newPhotoPreviews, setNewPhotoPreviews] = useState([]);
+  const [newPhotos, setNewPhotos] = useState([]);
   const [videoNames, setVideoNames] = useState([]);
+  const [newVideos, setNewVideos] = useState([]);
 
   const [form, setForm] = useState({
     title: '', description: '', property_type: 'Apartment', city: 'Muscat',
     neighborhood: '', price: '', price_period: 'month', bedrooms: '1', bathrooms: '1',
-    area_sqm: '', furnished: 'unfurnished',
-    contact_name: user?.name || '', contact_phone: '', contact_email: user?.email || '',
+    area_sqm: '', furnished: 'unfurnished', contact_name: '', contact_phone: '', contact_email: '',
   });
-  const [photos, setPhotos] = useState([]);
-  const [videos, setVideos] = useState([]);
+
+  useEffect(() => {
+    axios.get(`/api/listings/${id}`)
+      .then(r => {
+        const l = r.data;
+        setForm({
+          title: l.title || '',
+          description: l.description || '',
+          property_type: l.property_type || 'Apartment',
+          city: l.city || 'Muscat',
+          neighborhood: l.neighborhood || '',
+          price: l.price || '',
+          price_period: l.price_period || 'month',
+          bedrooms: String(l.bedrooms ?? '1'),
+          bathrooms: String(l.bathrooms ?? '1'),
+          area_sqm: l.area_sqm || '',
+          furnished: l.furnished || 'unfurnished',
+          contact_name: l.contact_name || '',
+          contact_phone: l.contact_phone || '',
+          contact_email: l.contact_email || '',
+        });
+        setExistingPhotos(l.photos || []);
+      })
+      .catch(() => navigate('/dashboard'))
+      .finally(() => setFetching(false));
+  }, [id, navigate]);
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const handlePhotos = (e) => {
+  const handleNewPhotos = (e) => {
     const files = Array.from(e.target.files);
-    setPhotos(files);
-    setPhotoPreviews(files.map(f => URL.createObjectURL(f)));
+    setNewPhotos(files);
+    setNewPhotoPreviews(files.map(f => URL.createObjectURL(f)));
   };
 
-  const handleVideos = (e) => {
+  const handleNewVideos = (e) => {
     const files = Array.from(e.target.files);
-    setVideos(files);
+    setNewVideos(files);
     setVideoNames(files.map(f => f.name));
-  };
-
-  const removePhoto = (idx) => {
-    setPhotos(ps => ps.filter((_, i) => i !== idx));
-    setPhotoPreviews(ps => ps.filter((_, i) => i !== idx));
   };
 
   const handleSubmit = async (e) => {
@@ -57,26 +78,32 @@ export default function CreateListingPage() {
     setLoading(true);
     try {
       const data = new FormData();
-      Object.entries(form).forEach(([k, v]) => { if (v) data.append(k, v); });
-      photos.forEach(f => data.append('photos', f));
-      videos.forEach(f => data.append('videos', f));
+      Object.entries(form).forEach(([k, v]) => { if (v !== '') data.append(k, v); });
+      newPhotos.forEach(f => data.append('photos', f));
+      newVideos.forEach(f => data.append('videos', f));
 
-      const { data: res } = await axios.post('/api/listings', data, {
+      await axios.put(`/api/listings/${id}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      navigate(`/listings/${res.id}`);
+      navigate(`/listings/${id}`);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create listing.');
+      setError(err.response?.data?.error || 'Failed to update listing.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (fetching) return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600" />
+    </div>
+  );
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('create_title')}</h1>
-        <p className="text-gray-500 text-sm mt-1">{t('create_sub')}</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('edit_title')}</h1>
+        <p className="text-gray-500 text-sm mt-1">{t('edit_sub')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -155,23 +182,31 @@ export default function CreateListingPage() {
         </Section>
 
         <Section title={t('section_photos')}>
+          {existingPhotos.length > 0 && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-500 mb-2">Current photos — upload new ones below to replace them:</p>
+              <div className="flex gap-2 flex-wrap">
+                {existingPhotos.map((src, i) => (
+                  <img key={i} src={mediaUrl(src)} alt="" onError={e => { e.target.src = PLACEHOLDER; }}
+                    className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                ))}
+              </div>
+            </div>
+          )}
           <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-400 transition-colors cursor-pointer"
-            onClick={() => document.getElementById('photo-input').click()}>
-            <input id="photo-input" type="file" accept="image/*" multiple className="hidden" onChange={handlePhotos} />
+            onClick={() => document.getElementById('edit-photo-input').click()}>
+            <input id="edit-photo-input" type="file" accept="image/*" multiple className="hidden" onChange={handleNewPhotos} />
             <svg className="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <p className="text-sm text-gray-600 font-medium">{t('photo_upload_label')}</p>
             <p className="text-xs text-gray-400 mt-1">{t('photo_upload_hint')}</p>
           </div>
-          {photoPreviews.length > 0 && (
+          {newPhotoPreviews.length > 0 && (
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-4">
-              {photoPreviews.map((src, i) => (
-                <div key={i} className="relative group aspect-square">
+              {newPhotoPreviews.map((src, i) => (
+                <div key={i} className="relative aspect-square">
                   <img src={src} alt="" className="w-full h-full object-cover rounded-lg" />
-                  <button type="button" onClick={() => removePhoto(i)}
-                    className="absolute top-1 end-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">×</button>
-                  {i === 0 && <span className="absolute bottom-1 start-1 bg-primary-600 text-white text-xs px-1.5 py-0.5 rounded">{t('cover_label')}</span>}
                 </div>
               ))}
             </div>
@@ -180,8 +215,8 @@ export default function CreateListingPage() {
 
         <Section title={t('section_videos')}>
           <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-400 transition-colors cursor-pointer"
-            onClick={() => document.getElementById('video-input').click()}>
-            <input id="video-input" type="file" accept="video/*" multiple className="hidden" onChange={handleVideos} />
+            onClick={() => document.getElementById('edit-video-input').click()}>
+            <input id="edit-video-input" type="file" accept="video/*" multiple className="hidden" onChange={handleNewVideos} />
             <svg className="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
@@ -222,7 +257,7 @@ export default function CreateListingPage() {
         {error && <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">{error}</div>}
 
         <div className="flex gap-3 pt-2">
-          <button type="button" onClick={() => navigate('/dashboard')} className="btn-secondary flex-1">{t('btn_cancel')}</button>
+          <button type="button" onClick={() => navigate(`/listings/${id}`)} className="btn-secondary flex-1">{t('btn_cancel')}</button>
           <button type="submit" disabled={loading} className="btn-primary flex-1">
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -230,9 +265,9 @@ export default function CreateListingPage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
-                {t('btn_publishing')}
+                {t('btn_saving')}
               </span>
-            ) : t('btn_publish')}
+            ) : t('btn_save')}
           </button>
         </div>
       </form>

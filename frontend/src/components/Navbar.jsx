@@ -53,6 +53,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-6">
             {navLink('/listings', t('nav_browse'))}
             {user && isCreator && navLink('/dashboard', t('nav_dashboard'))}
+            {user?.isAdmin && navLink('/admin', t('nav_admin'))}
           </div>
 
           {/* Desktop Auth */}
@@ -101,6 +102,9 @@ export default function Navbar() {
                 <Link to="/dashboard" onClick={() => setMenuOpen(false)} className="text-gray-700 font-medium py-1">{t('nav_dashboard')}</Link>
                 <Link to="/create-listing" onClick={() => setMenuOpen(false)} className="text-primary-600 font-semibold py-1">{t('nav_post')}</Link>
               </>
+            )}
+            {user?.isAdmin && (
+              <Link to="/admin" onClick={() => setMenuOpen(false)} className="text-red-600 font-semibold py-1">{t('nav_admin')}</Link>
             )}
             <LangToggle mobile />
             {user ? (

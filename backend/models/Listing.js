@@ -9,6 +9,7 @@ const listingSchema = new mongoose.Schema({
   city:          { type: String, required: true, index: true },
   neighborhood:  { type: String, default: '' },
   price:         { type: Number, required: true, index: true },
+  price_period:  { type: String, enum: ['month', 'week', 'day'], default: 'month' },
   bedrooms:      { type: Number, required: true },
   bathrooms:     { type: Number, required: true },
   area_sqm:      { type: Number, default: null },

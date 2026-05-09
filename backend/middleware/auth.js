@@ -23,4 +23,11 @@ function requireCreator(req, res, next) {
   next();
 }
 
-module.exports = { authenticateToken, requireCreator, JWT_SECRET };
+function requireAdmin(req, res, next) {
+  if (!req.user?.isAdmin) {
+    return res.status(403).json({ error: 'Admin access required.' });
+  }
+  next();
+}
+
+module.exports = { authenticateToken, requireCreator, requireAdmin, JWT_SECRET };

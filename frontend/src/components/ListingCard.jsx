@@ -22,6 +22,7 @@ export default function ListingCard({ listing }) {
   const imgSrc = mediaUrl(listing.photos?.[0]);
   const furnishedKey = listing.furnished === 'furnished' ? 'furnished' : listing.furnished === 'semi-furnished' ? 'semi_furnished' : 'unfurnished';
   const bedsLabel = listing.bedrooms === 0 ? t('detail_studio') : `${listing.bedrooms} ${t('detail_bed')}`;
+  const periodKey = listing.price_period === 'week' ? 'detail_per_week' : listing.price_period === 'day' ? 'detail_per_day' : 'detail_per_month';
 
   return (
     <Link to={`/listings/${listing.id || listing._id}`} className="card group hover:shadow-md transition-shadow duration-200 flex flex-col">
@@ -41,7 +42,7 @@ export default function ListingCard({ listing }) {
         </div>
         <div className="absolute bottom-3 end-3">
           <span className="bg-primary-600 text-white font-bold text-sm px-3 py-1.5 rounded-lg shadow">
-            OMR {listing.price?.toLocaleString()}<span className="font-normal text-xs opacity-90"> {t('detail_per_month')}</span>
+            OMR {listing.price?.toLocaleString()}<span className="font-normal text-xs opacity-90"> {t(periodKey)}</span>
           </span>
         </div>
       </div>

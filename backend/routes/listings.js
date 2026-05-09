@@ -105,7 +105,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', authenticateToken, requireCreator,
   upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'videos', maxCount: 2 }]),
   async (req, res) => {
-    const { title, description, property_type, city, neighborhood, price, bedrooms, bathrooms, area_sqm, furnished, contact_name, contact_phone, contact_email } = req.body;
+    const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contact_name, contact_phone, contact_email } = req.body;
 
     if (!title || !property_type || !city || !price || bedrooms == null || bathrooms == null || !contact_name || !contact_phone)
       return res.status(400).json({ error: 'Please fill in all required fields.' });
@@ -120,7 +120,8 @@ router.post('/', authenticateToken, requireCreator,
         creatorId: req.user.id, creatorName: req.user.name,
         title: title.trim(), description: description?.trim() || '',
         property_type, city, neighborhood: neighborhood?.trim() || '',
-        price: Number(price), bedrooms: Number(bedrooms), bathrooms: Number(bathrooms),
+        price: Number(price), price_period: price_period || 'month',
+        bedrooms: Number(bedrooms), bathrooms: Number(bathrooms),
         area_sqm: area_sqm ? Number(area_sqm) : null,
         furnished: furnished || 'unfurnished',
         contact_name: contact_name.trim(), contact_phone: contact_phone.trim(),
@@ -132,6 +133,54 @@ router.post('/', authenticateToken, requireCreator,
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Failed to create listing.' });
+    }
+  }
+);
+
+// PUT edit listing (owner only)
+router.put('/:id', authenticateToken, requireCreator,
+  upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'videos', maxCount: 2 }]),
+  async (req, res) => {
+    try {
+      const listing = await Listing.findOne({ _id: req.params.id, creatorId: req.user.id });
+      if (!listing) return res.status(404).json({ error: 'Listing not found or access denied.' });
+
+      const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contact_name, contact_phone, contact_email } = req.body;
+
+      if (title)         listing.title         = title.trim();
+      if (description != null) listing.description = description.trim();
+      if (property_type) listing.property_type = property_type;
+      if (city)          listing.city          = city;
+      if (neighborhood != null) listing.neighborhood = neighborhood.trim();
+      if (price)         listing.price         = Number(price);
+      if (price_period)  listing.price_period  = price_period;
+      if (bedrooms != null) listing.bedrooms   = Number(bedrooms);
+      if (bathrooms != null) listing.bathrooms = Number(bathrooms);
+      if (area_sqm != null) listing.area_sqm   = area_sqm ? Number(area_sqm) : null;
+      if (furnished)     listing.furnished     = furnished;
+      if (contact_name)  listing.contact_name  = contact_name.trim();
+      if (contact_phone) listing.contact_phone = contact_phone.trim();
+      if (contact_email != null) listing.contact_email = contact_email.trim();
+
+      // If new photos uploaded, replace old ones
+      if (req.files?.photos?.length) {
+        // Delete old photos from Cloudinary
+        await Promise.allSettled((listing.photoPublicIds || []).map(pid => cloudinary.uploader.destroy(pid, { resource_type: 'image' })));
+        listing.photos        = req.files.photos.map(f => f.path);
+        listing.photoPublicIds = req.files.photos.map(f => f.filename);
+      }
+      // If new videos uploaded, replace old ones
+      if (req.files?.videos?.length) {
+        await Promise.allSettled((listing.videoPublicIds || []).map(pid => cloudinary.uploader.destroy(pid, { resource_type: 'video' })));
+        listing.videos        = req.files.videos.map(f => f.path);
+        listing.videoPublicIds = req.files.videos.map(f => f.filename);
+      }
+
+      await listing.save();
+      res.json({ id: listing._id, message: 'Listing updated successfully!' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to update listing.' });
     }
   }
 );

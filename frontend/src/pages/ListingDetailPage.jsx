@@ -43,6 +43,7 @@ export default function ListingDetailPage() {
 
   const photos = listing.photos?.length ? listing.photos : [];
   const isOwner = user?.id === listing.creator_id || user?.id === String(listing.creatorId);
+  const periodKey = listing.price_period === 'week' ? 'detail_per_week' : listing.price_period === 'day' ? 'detail_per_day' : 'detail_per_month';
   const furnishedKey = listing.furnished === 'furnished' ? 'furnished' : listing.furnished === 'semi-furnished' ? 'semi_furnished' : 'unfurnished';
   const furnishedLabel = t(furnishedKey);
   const furnishedColor = listing.furnished === 'furnished' ? 'bg-green-100 text-green-700' : listing.furnished === 'semi-furnished' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600';
@@ -143,7 +144,7 @@ export default function ListingDetailPage() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <span className="text-3xl font-bold text-primary-600">OMR {listing.price?.toLocaleString()}</span>
-                <span className="text-gray-500 text-sm"> {t('detail_per_month')}</span>
+                <span className="text-gray-500 text-sm"> {t(periodKey)}</span>
               </div>
               <span className={`badge ${furnishedColor}`}>{furnishedLabel}</span>
             </div>
@@ -209,8 +210,9 @@ export default function ListingDetailPage() {
           {isOwner && (
             <div className="card p-4 border-amber-200 bg-amber-50">
               <p className="text-sm font-medium text-amber-800 mb-3">{t('detail_own')}</p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Link to="/dashboard" className="flex-1 btn-secondary text-sm text-center">{t('detail_dashboard')}</Link>
+                <Link to={`/edit-listing/${id}`} className="flex-1 btn-secondary text-sm text-center">{t('detail_edit')}</Link>
                 <button onClick={handleDelete} disabled={deleting} className="flex-1 btn-danger text-sm">
                   {deleting ? t('detail_deleting') : t('detail_delete')}
                 </button>

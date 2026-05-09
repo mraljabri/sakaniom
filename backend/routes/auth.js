@@ -20,10 +20,10 @@ router.post('/signup', async (req, res) => {
     const user = await User.create({ name: name.trim(), email, password: hashed, phone: phone || null, role });
 
     const token = jwt.sign(
-      { id: user._id, email: user.email, name: user.name, role: user.role },
+      { id: user._id, email: user.email, name: user.name, role: user.role, isAdmin: user.isAdmin },
       JWT_SECRET, { expiresIn: '7d' }
     );
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role, isAdmin: user.isAdmin } });
   } catch (err) {
     if (err.code === 11000)
       return res.status(409).json({ error: 'An account with this email already exists.' });
@@ -43,10 +43,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
 
     const token = jwt.sign(
-      { id: user._id, email: user.email, name: user.name, role: user.role },
+      { id: user._id, email: user.email, name: user.name, role: user.role, isAdmin: user.isAdmin },
       JWT_SECRET, { expiresIn: '7d' }
     );
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role, isAdmin: user.isAdmin } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error. Please try again.' });

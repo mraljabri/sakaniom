@@ -45,6 +45,13 @@ export function LanguageProvider({ children }) {
     { value: 'Studio',    label: t('Studio') },
     { value: 'Townhouse', label: t('Townhouse') },
     { value: 'Penthouse', label: t('Penthouse') },
+    { value: 'Hotel',     label: t('Hotel') },
+  ];
+
+  const PRICE_PERIODS = [
+    { value: 'month', label: t('period_month') },
+    { value: 'week',  label: t('period_week') },
+    { value: 'day',   label: t('period_day') },
   ];
 
   const FURNISHED_OPTIONS = [
@@ -54,7 +61,7 @@ export function LanguageProvider({ children }) {
   ];
 
   return (
-    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, CITIES, TYPES, FURNISHED_OPTIONS }}>
+    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS }}>
       {children}
     </LanguageContext.Provider>
   );
