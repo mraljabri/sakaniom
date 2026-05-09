@@ -42,7 +42,8 @@ export default function ListingDetailPage() {
   if (!listing) return null;
 
   const photos = listing.photos?.length ? listing.photos : [];
-  const isOwner = user?.id === listing.creator_id || user?.id === String(listing.creatorId);
+  const isOwner = user && (user.id === listing.creator_id || user.id === String(listing.creatorId));
+  const canManage = isOwner || user?.isAdmin;
   const periodKey = listing.price_period === 'week' ? 'detail_per_week' : listing.price_period === 'day' ? 'detail_per_day' : 'detail_per_month';
   const furnishedKey = listing.furnished === 'furnished' ? 'furnished' : listing.furnished === 'semi-furnished' ? 'semi_furnished' : 'unfurnished';
   const furnishedLabel = t(furnishedKey);
@@ -207,7 +208,7 @@ export default function ListingDetailPage() {
             </div>
           </div>
 
-          {isOwner && (
+          {canManage && (
             <div className="card p-4 border-amber-200 bg-amber-50">
               <p className="text-sm font-medium text-amber-800 mb-3">{t('detail_own')}</p>
               <div className="flex gap-2 flex-wrap">
