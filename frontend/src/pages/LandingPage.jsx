@@ -6,7 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const { t, CITIES, TYPES } = useLanguage();
+  const { t, lang, CITIES, TYPES } = useLanguage();
   const [city, setCity] = useState('');
   const [type, setType] = useState('');
   const [bedrooms, setBedrooms] = useState('');
@@ -151,6 +151,11 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8 text-center text-sm">
         <p>{t('footer', { year: new Date().getFullYear() })}</p>
+        <p className="mt-2">
+          <Link to="/terms" className="text-gray-500 hover:text-white transition-colors underline">
+            {lang === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
+          </Link>
+        </p>
       </footer>
     </div>
   );

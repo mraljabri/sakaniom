@@ -11,6 +11,7 @@ import CreateListingPage from './pages/CreateListingPage';
 import EditListingPage from './pages/EditListingPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
+import TermsPage from './pages/TermsPage';
 
 function ProtectedRoute({ children, requireCreator = false, requireAdmin = false }) {
   const { user, loading } = useAuth();
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/create-listing" element={<ProtectedRoute><CreateListingPage /></ProtectedRoute>} />
         <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
+        <Route path="/terms" element={<TermsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

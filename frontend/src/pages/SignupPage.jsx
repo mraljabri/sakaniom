@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -68,7 +69,11 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-4">
+            By creating an account you agree to our{' '}
+            <Link to="/terms" className="text-primary-600 hover:underline">Terms & Conditions</Link>
+          </p>
+          <p className="text-center text-sm text-gray-500 mt-3">
             {t('have_account')}{' '}
             <Link to="/login" className="text-primary-600 font-semibold hover:underline">{t('login_link')}</Link>
           </p>
