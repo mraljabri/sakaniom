@@ -39,7 +39,8 @@ router.post('/signup', async (req, res) => {
         existing.verificationCode = code;
         existing.verificationExpiry = new Date(Date.now() + 15 * 60 * 1000);
         await existing.save();
-        await sendVerificationEmail(existing.email, existing.name, code);
+        sendVerificationEmail(existing.email, existing.name, code)
+          .catch(err => console.error('Email send failed:', err.message));
         return res.status(200).json({ message: 'Verification code resent.', email: existing.email });
       }
       return res.status(409).json({ error: 'An account with this email already exists.' });
@@ -54,7 +55,10 @@ router.post('/signup', async (req, res) => {
       verificationExpiry: new Date(Date.now() + 15 * 60 * 1000),
     });
 
-    await sendVerificationEmail(user.email, user.name, code);
+    // Send email in background — don't block the response
+    sendVerificationEmail(user.email, user.name, code)
+      .catch(err => console.error('Email send failed:', err.message));
+
     res.status(201).json({ message: 'Verification code sent to your email.', email: user.email });
   } catch (err) {
     console.error(err);
@@ -105,7 +109,8 @@ router.post('/resend-code', async (req, res) => {
     user.verificationExpiry = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
 
-    await sendVerificationEmail(user.email, user.name, code);
+    sendVerificationEmail(user.email, user.name, code)
+      .catch(err => console.error('Email send failed:', err.message));
     res.json({ message: 'New verification code sent.' });
   } catch (err) {
     console.error(err);
