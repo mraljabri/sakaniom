@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function SignupPage() {
+  const { login } = useAuth();
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
@@ -24,8 +25,9 @@ export default function SignupPage() {
     setError('');
     setLoading(true);
     try {
-      await axios.post('/api/auth/signup', form);
-      navigate('/verify-email', { state: { email: form.email } });
+      const { data } = await axios.post('/api/auth/signup', form);
+      login(data.token, data.user);
+      navigate('/listings');
     } catch (err) {
       setError(err.response?.data?.error || 'Signup failed. Please try again.');
     } finally {

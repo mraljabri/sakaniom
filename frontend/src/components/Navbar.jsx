@@ -45,7 +45,7 @@ export default function Navbar() {
               </svg>
             </div>
             <span className="text-xl font-bold text-gray-900">
-              {lang === 'ar' ? 'سكاني عُمان' : <><span>Sakani</span><span className="text-primary-600">OM</span></>}
+              {lang === 'ar' ? 'سكني عُمان' : <><span>Sakani</span><span className="text-primary-600">OM</span></>}
             </span>
           </Link>
 
