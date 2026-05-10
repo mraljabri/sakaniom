@@ -26,8 +26,8 @@ export default function CreateListingPage() {
   const [form, setForm] = useState({
     title: '', description: '', property_type: 'Apartment', city: 'Muscat',
     neighborhood: '', price: '', price_period: 'month', bedrooms: '1', bathrooms: '1',
-    area_sqm: '', furnished: 'unfurnished', contract_period: 'no_contract',
-    family_status: 'both', payment_method: 'cash',
+    area_sqm: '', furnished: 'unfurnished', contract_period: '',
+    family_status: '', payment_method: '',
     contact_name: user?.name || '', contact_phone: '', contact_email: user?.email || '',
   });
   const [photos, setPhotos] = useState([]);
@@ -158,21 +158,21 @@ export default function CreateListingPage() {
         <Section title={t('section_terms')}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="label">{t('field_contract')}</label>
-              <select className="input" value={form.contract_period} onChange={set('contract_period')}>
-                {CONTRACT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <label className="label">{t('field_contract')} *</label>
+              <select className="input" value={form.contract_period} onChange={set('contract_period')} required>
+                {CONTRACT_OPTIONS.map(o => <option key={o.value} value={o.value} disabled={o.value === ''}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="label">{t('field_family')}</label>
-              <select className="input" value={form.family_status} onChange={set('family_status')}>
-                {FAMILY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <label className="label">{t('field_family')} *</label>
+              <select className="input" value={form.family_status} onChange={set('family_status')} required>
+                {FAMILY_OPTIONS.map(o => <option key={o.value} value={o.value} disabled={o.value === ''}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="label">{t('field_payment')}</label>
-              <select className="input" value={form.payment_method} onChange={set('payment_method')}>
-                {PAYMENT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <label className="label">{t('field_payment')} *</label>
+              <select className="input" value={form.payment_method} onChange={set('payment_method')} required>
+                {PAYMENT_OPTIONS.map(o => <option key={o.value} value={o.value} disabled={o.value === ''}>{o.label}</option>)}
               </select>
             </div>
           </div>

@@ -12,6 +12,7 @@ import EditListingPage from './pages/EditListingPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import TermsPage from './pages/TermsPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
 
 function ProtectedRoute({ children, requireCreator = false, requireAdmin = false }) {
   const { user, loading } = useAuth();
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

@@ -23,8 +23,12 @@ export default function LoginPage() {
     try {
       const { data } = await axios.post('/api/auth/login', { email, password });
       login(data.token, data.user);
-      navigate(from || (data.user.role === 'creator' ? '/dashboard' : '/listings'));
+      navigate(from || '/listings');
     } catch (err) {
+      if (err.response?.data?.needsVerification) {
+        navigate('/verify-email', { state: { email: err.response.data.email } });
+        return;
+      }
       setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);

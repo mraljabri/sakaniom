@@ -55,6 +55,7 @@ export function LanguageProvider({ children }) {
   ];
 
   const CONTRACT_OPTIONS = [
+    { value: '', label: isRTL ? '— اختر مدة العقد —' : '— Select contract period —' },
     { value: 'no_contract', label: t('contract_no_contract') },
     { value: '1_month',     label: t('contract_1_month') },
     { value: '3_months',    label: t('contract_3_months') },
@@ -64,12 +65,14 @@ export function LanguageProvider({ children }) {
   ];
 
   const FAMILY_OPTIONS = [
+    { value: '', label: isRTL ? '— اختر —' : '— Select —' },
     { value: 'both',       label: t('family_both') },
     { value: 'family',     label: t('family_family') },
     { value: 'non_family', label: t('family_non_family') },
   ];
 
   const PAYMENT_OPTIONS = [
+    { value: '', label: isRTL ? '— اختر طريقة الدفع —' : '— Select payment method —' },
     { value: 'cash',          label: t('payment_cash') },
     { value: 'check',         label: t('payment_check') },
     { value: 'bank_transfer', label: t('payment_bank_transfer') },
