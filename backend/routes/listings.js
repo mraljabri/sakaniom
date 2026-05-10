@@ -105,7 +105,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', authenticateToken, requireCreator,
   upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'videos', maxCount: 2 }]),
   async (req, res) => {
-    const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email } = req.body;
+    const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email, show_email } = req.body;
 
     if (!title || !property_type || !city || !price || bedrooms == null || bathrooms == null || !contact_name || !contact_phone)
       return res.status(400).json({ error: 'Please fill in all required fields.' });
@@ -129,6 +129,7 @@ router.post('/', authenticateToken, requireCreator,
         payment_method: payment_method || 'cash',
         contact_name: contact_name.trim(), contact_phone: contact_phone.trim(),
         contact_email: contact_email?.trim() || '',
+        show_email: show_email === 'true',
         photos, photoPublicIds, videos, videoPublicIds,
       });
 
@@ -148,7 +149,7 @@ router.put('/:id', authenticateToken, requireCreator,
       const listing = await Listing.findOne({ _id: req.params.id, creatorId: req.user.id });
       if (!listing) return res.status(404).json({ error: 'Listing not found or access denied.' });
 
-      const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email } = req.body;
+      const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email, show_email } = req.body;
 
       if (title)         listing.title         = title.trim();
       if (description != null) listing.description = description.trim();
@@ -167,6 +168,7 @@ router.put('/:id', authenticateToken, requireCreator,
       if (contact_name)  listing.contact_name  = contact_name.trim();
       if (contact_phone) listing.contact_phone = contact_phone.trim();
       if (contact_email != null) listing.contact_email = contact_email.trim();
+      listing.show_email = show_email === 'true';
 
       // If new photos uploaded, replace old ones
       if (req.files?.photos?.length) {

@@ -20,6 +20,7 @@ const listingSchema = new mongoose.Schema({
   contact_name:  { type: String, required: true },
   contact_phone: { type: String, required: true },
   contact_email: { type: String, default: '' },
+  show_email:    { type: Boolean, default: false },
   photos:        [String],   // Cloudinary URLs
   videos:        [String],   // Cloudinary URLs
   photoPublicIds:[String],   // Cloudinary public_ids for deletion

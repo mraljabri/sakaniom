@@ -30,6 +30,7 @@ export default function EditListingPage() {
     title: '', description: '', property_type: 'Apartment', city: 'Muscat',
     neighborhood: '', price: '', price_period: 'month', bedrooms: '1', bathrooms: '1',
     area_sqm: '', furnished: 'unfurnished', contact_name: '', contact_phone: '', contact_email: '',
+    show_email: false,
   });
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function EditListingPage() {
           contact_name: l.contact_name || '',
           contact_phone: l.contact_phone || '',
           contact_email: l.contact_email || '',
+          show_email: l.show_email || false,
         });
         setExistingPhotos(l.photos || []);
       })
@@ -81,7 +83,10 @@ export default function EditListingPage() {
     setLoading(true);
     try {
       const data = new FormData();
-      Object.entries(form).forEach(([k, v]) => { if (v !== '') data.append(k, v); });
+      Object.entries(form).forEach(([k, v]) => {
+        if (k === 'show_email') data.append(k, v); // always send boolean
+        else if (v !== '') data.append(k, v);
+      });
       newPhotos.forEach(f => data.append('photos', f));
       newVideos.forEach(f => data.append('videos', f));
 
@@ -277,6 +282,21 @@ export default function EditListingPage() {
                 <input className="input" type="email" placeholder={t('field_email_ph')} value={form.contact_email} onChange={set('contact_email')} />
               </div>
             </div>
+            {/* Show email toggle — only if email is entered */}
+            {form.contact_email && (
+              <div
+                className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors select-none ${form.show_email ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}
+                onClick={() => setForm(f => ({ ...f, show_email: !f.show_email }))}
+              >
+                <div className={`relative w-10 h-6 rounded-full flex-shrink-0 transition-colors ${form.show_email ? 'bg-primary-600' : 'bg-gray-300'}`}>
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${form.show_email ? 'left-5' : 'left-1'}`} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-800">{t('field_show_email')}</p>
+                  <p className="text-xs text-gray-500">{t('field_show_email_hint')}</p>
+                </div>
+              </div>
+            )}
           </div>
         </Section>
 
