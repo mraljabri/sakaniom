@@ -13,6 +13,7 @@ import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import TermsPage from './pages/TermsPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
+import VerifySuccessPage from './pages/VerifySuccessPage';
 
 function ProtectedRoute({ children, requireCreator = false, requireAdmin = false }) {
   const { user, loading } = useAuth();
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/verify-success" element={<VerifySuccessPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

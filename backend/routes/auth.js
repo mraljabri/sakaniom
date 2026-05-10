@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { JWT_SECRET } = require('../middleware/auth');
 const { sendVerificationEmail } = require('../utils/email');
 
-function generateCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+function generateToken() {
+  return crypto.randomBytes(32).toString('hex');
 }
 
 function signToken(user) {
@@ -33,69 +34,65 @@ router.post('/signup', async (req, res) => {
   try {
     const existing = await User.findOne({ email: email.toLowerCase().trim() });
     if (existing) {
-      // If exists but not verified, resend code
       if (!existing.isVerified) {
-        const code = generateCode();
-        existing.verificationCode = code;
-        existing.verificationExpiry = new Date(Date.now() + 15 * 60 * 1000);
+        const token = generateToken();
+        existing.verificationCode = token;
+        existing.verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
         await existing.save();
-        sendVerificationEmail(existing.email, existing.name, code)
-          .catch(err => console.error('Email send failed:', err.message));
-        return res.status(200).json({ message: 'Verification code resent.', email: existing.email });
+        sendVerificationEmail(existing.email, existing.name, token)
+          .catch(err => console.error('Email failed:', err.message));
+        return res.status(200).json({ message: 'Confirmation email resent.', email: existing.email });
       }
       return res.status(409).json({ error: 'An account with this email already exists.' });
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const code = generateCode();
+    const token = generateToken();
     const user = await User.create({
       name: name.trim(), email, password: hashed,
       phone: phone || null, role: 'creator',
-      verificationCode: code,
-      verificationExpiry: new Date(Date.now() + 15 * 60 * 1000),
+      verificationCode: token,
+      verificationExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    // Send email in background — don't block the response
-    sendVerificationEmail(user.email, user.name, code)
-      .catch(err => console.error('Email send failed:', err.message));
+    sendVerificationEmail(user.email, user.name, token)
+      .catch(err => console.error('Email failed:', err.message));
 
-    res.status(201).json({ message: 'Verification code sent to your email.', email: user.email });
+    res.status(201).json({ message: 'Confirmation email sent.', email: user.email });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error. Please try again.' });
   }
 });
 
-// POST /api/auth/verify-email
-router.post('/verify-email', async (req, res) => {
-  const { email, code } = req.body;
-  if (!email || !code)
-    return res.status(400).json({ error: 'Email and code are required.' });
+// GET /api/auth/verify-email?token=xxx
+router.get('/verify-email', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).json({ error: 'Token is required.' });
 
   try {
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
-    if (!user) return res.status(404).json({ error: 'Account not found.' });
-    if (user.isVerified) return res.status(400).json({ error: 'Account already verified.' });
-    if (!user.verificationCode || user.verificationCode !== code)
-      return res.status(400).json({ error: 'Invalid verification code.' });
+    const user = await User.findOne({ verificationCode: token });
+    if (!user) return res.status(400).json({ error: 'Invalid or expired confirmation link.' });
     if (user.verificationExpiry < new Date())
-      return res.status(400).json({ error: 'Verification code has expired. Please request a new one.' });
+      return res.status(400).json({ error: 'This confirmation link has expired. Please sign up again.' });
 
     user.isVerified = true;
     user.verificationCode = null;
     user.verificationExpiry = null;
     await user.save();
 
-    const token = signToken(user);
-    res.json({ token, user: userPayload(user) });
+    const authToken = signToken(user);
+    // Redirect to frontend with token in URL
+    const baseUrl = process.env.BASE_URL || 'https://sakaniom.onrender.com';
+    res.redirect(`${baseUrl}/verify-success?token=${authToken}&name=${encodeURIComponent(user.name)}`);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error. Please try again.' });
   }
 });
 
-// POST /api/auth/resend-code
-router.post('/resend-code', async (req, res) => {
+// POST /api/auth/resend-verification
+router.post('/resend-verification', async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email is required.' });
 
@@ -104,14 +101,15 @@ router.post('/resend-code', async (req, res) => {
     if (!user) return res.status(404).json({ error: 'Account not found.' });
     if (user.isVerified) return res.status(400).json({ error: 'Account already verified.' });
 
-    const code = generateCode();
-    user.verificationCode = code;
-    user.verificationExpiry = new Date(Date.now() + 15 * 60 * 1000);
+    const token = generateToken();
+    user.verificationCode = token;
+    user.verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await user.save();
 
-    sendVerificationEmail(user.email, user.name, code)
-      .catch(err => console.error('Email send failed:', err.message));
-    res.json({ message: 'New verification code sent.' });
+    sendVerificationEmail(user.email, user.name, token)
+      .catch(err => console.error('Email failed:', err.message));
+
+    res.json({ message: 'Confirmation email sent.' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error. Please try again.' });
@@ -130,7 +128,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
 
     if (!user.isVerified)
-      return res.status(403).json({ error: 'Please verify your email first.', needsVerification: true, email: user.email });
+      return res.status(403).json({ error: 'Please confirm your email first.', needsVerification: true, email: user.email });
 
     const token = signToken(user);
     res.json({ token, user: userPayload(user) });
