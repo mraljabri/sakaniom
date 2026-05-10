@@ -1,12 +1,6 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendVerificationEmail(toEmail, name, code) {
   const html = `
@@ -34,8 +28,8 @@ async function sendVerificationEmail(toEmail, name, code) {
     </html>
   `;
 
-  await transporter.sendMail({
-    from: `"SakaniOM" <${process.env.GMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'SakaniOM <onboarding@resend.dev>',
     to: toEmail,
     subject: `${code} — Your SakaniOM Verification Code`,
     html,
