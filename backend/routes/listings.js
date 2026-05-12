@@ -89,6 +89,18 @@ router.get('/my', authenticateToken, requireCreator, async (req, res) => {
   }
 });
 
+// GET all active listings by a specific creator (public)
+router.get('/by-creator/:creatorId', async (req, res) => {
+  try {
+    const docs = await Listing.find({ creatorId: req.params.creatorId, status: 'active' })
+      .sort({ createdAt: -1 }).lean();
+    res.json(docs.map(doc => ({ ...doc, id: doc._id, created_at: doc.createdAt, creator_name: doc.creatorName })));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch listings.' });
+  }
+});
+
 // GET single listing
 router.get('/:id', async (req, res) => {
   try {

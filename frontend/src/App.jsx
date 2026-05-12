@@ -12,6 +12,7 @@ import EditListingPage from './pages/EditListingPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import TermsPage from './pages/TermsPage';
+import LandlordPage from './pages/LandlordPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import VerifySuccessPage from './pages/VerifySuccessPage';
 
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/landlord/:id" element={<LandlordPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/verify-success" element={<VerifySuccessPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

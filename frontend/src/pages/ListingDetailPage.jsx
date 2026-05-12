@@ -1,9 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { mediaUrl, PLACEHOLDER } from '../utils/media';
+
+// Reusable star row
+function Stars({ value, size = 'md' }) {
+  const sz = size === 'sm' ? 'w-3.5 h-3.5' : 'w-5 h-5';
+  return (
+    <span className="flex gap-0.5">
+      {[1,2,3,4,5].map(n => (
+        <svg key={n} className={`${sz} ${n <= Math.round(value) ? 'text-amber-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+// Interactive star picker
+function StarPicker({ value, onChange }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex gap-1">
+      {[1,2,3,4,5].map(n => (
+        <button key={n} type="button"
+          onClick={() => onChange(n)}
+          onMouseEnter={() => setHover(n)}
+          onMouseLeave={() => setHover(0)}
+          className="focus:outline-none"
+        >
+          <svg className={`w-8 h-8 transition-colors ${n <= (hover || value) ? 'text-amber-400' : 'text-gray-300'} hover:text-amber-300`} fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function ListingDetailPage() {
   const { id } = useParams();
@@ -15,13 +50,55 @@ export default function ListingDetailPage() {
   const [activePhoto, setActivePhoto] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [phoneRevealed, setPhoneRevealed] = useState(false);
+  const [ratingStats, setRatingStats] = useState(null);   // { avg, count, listingCount, recent }
+  const [myRating, setMyRating] = useState(null);         // { rating, comment } | null
+  const [ratingInput, setRatingInput] = useState(0);
+  const [commentInput, setCommentInput] = useState('');
+  const [ratingLoading, setRatingLoading] = useState(false);
+  const [ratingDone, setRatingDone] = useState(false);
 
   useEffect(() => {
     axios.get(`/api/listings/${id}`)
-      .then(r => setListing(r.data))
+      .then(r => {
+        setListing(r.data);
+        const creatorId = r.data.creatorId;
+        // Fetch rating summary in parallel
+        axios.get(`/api/ratings/${creatorId}`).then(rs => setRatingStats(rs.data)).catch(() => {});
+      })
       .catch(() => navigate('/listings'))
       .finally(() => setLoading(false));
   }, [id, navigate]);
+
+  // Once we know the listing and user, fetch user's own rating
+  useEffect(() => {
+    if (!listing || !user) return;
+    const creatorId = listing.creatorId;
+    if (user.id === String(creatorId)) return; // owner, skip
+    axios.get(`/api/ratings/${creatorId}/mine`).then(r => {
+      if (r.data) {
+        setMyRating(r.data);
+        setRatingInput(r.data.rating);
+        setCommentInput(r.data.comment || '');
+      }
+    }).catch(() => {});
+  }, [listing, user]);
+
+  const submitRating = useCallback(async () => {
+    if (!ratingInput) return;
+    setRatingLoading(true);
+    try {
+      const creatorId = listing.creatorId;
+      const res = await axios.post(`/api/ratings/${creatorId}`, { rating: ratingInput, comment: commentInput });
+      setRatingStats(s => ({ ...s, avg: res.data.avg, count: res.data.count }));
+      setMyRating(res.data.myRating);
+      setRatingDone(true);
+      setTimeout(() => setRatingDone(false), 3000);
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to submit rating.');
+    } finally {
+      setRatingLoading(false);
+    }
+  }, [ratingInput, commentInput, listing]);
 
   const handleDelete = async () => {
     if (!window.confirm(t('detail_confirm_delete'))) return;
@@ -184,16 +261,36 @@ export default function ListingDetailPage() {
               {t('detail_contact')}
             </h3>
             <div className="space-y-3">
-              {/* Owner name */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+              {/* Owner — clickable link to landlord profile */}
+              <Link to={`/landlord/${listing.creatorId}`} className="flex items-center gap-3 group">
+                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-primary-200 transition-colors">
                   <span className="text-primary-700 font-bold">{listing.contact_name?.[0]?.toUpperCase()}</span>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900">{listing.contact_name}</p>
-                  <p className="text-xs text-gray-500">{t('detail_agent')}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">{listing.contact_name}</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                    <p className="text-xs text-gray-500">{t('detail_agent')}</p>
+                    {ratingStats?.listingCount != null && (
+                      <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                        {ratingStats.listingCount === 1
+                          ? t('landlord_listing_count').replace('{n}', ratingStats.listingCount)
+                          : t('landlord_listing_count_pl').replace('{n}', ratingStats.listingCount)}
+                      </span>
+                    )}
+                    {ratingStats?.count > 0 && (
+                      <span className="flex items-center gap-1 text-xs text-amber-600">
+                        <svg className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        {ratingStats.avg} ({ratingStats.count})
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
+                <svg className="w-4 h-4 text-gray-400 group-hover:text-primary-500 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
 
               {/* Phone — masked until revealed */}
               {!phoneRevealed ? (
@@ -243,6 +340,79 @@ export default function ListingDetailPage() {
                 </a>
               )}
             </div>
+          </div>
+
+          {/* Rating card */}
+          <div className="card p-5">
+            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              {t('rating_title')}
+            </h3>
+
+            {/* Summary row */}
+            {ratingStats?.count > 0 && (
+              <div className="flex items-center gap-3 mb-4 p-3 bg-amber-50 rounded-xl">
+                <span className="text-3xl font-bold text-amber-600">{ratingStats.avg}</span>
+                <div>
+                  <Stars value={ratingStats.avg} />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {ratingStats.count === 1
+                      ? t('rating_count').replace('{n}', ratingStats.count)
+                      : t('rating_count_pl').replace('{n}', ratingStats.count)}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Rating widget */}
+            {isOwner ? (
+              <p className="text-sm text-gray-500 italic">{t('rating_own')}</p>
+            ) : !user ? (
+              <Link to="/login" className="block text-sm text-primary-600 font-medium hover:underline">
+                {t('rating_login')}
+              </Link>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
+                  {myRating ? t('rating_update') : t('rating_your')}
+                </p>
+                <StarPicker value={ratingInput} onChange={setRatingInput} />
+                <textarea
+                  className="input text-sm min-h-[80px] resize-none"
+                  placeholder={t('rating_comment_ph')}
+                  value={commentInput}
+                  onChange={e => setCommentInput(e.target.value)}
+                  maxLength={300}
+                />
+                {ratingDone && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-3 py-2 text-sm">
+                    {t('rating_submitted')}
+                  </div>
+                )}
+                <button
+                  onClick={submitRating}
+                  disabled={!ratingInput || ratingLoading}
+                  className="btn-primary w-full text-sm"
+                >
+                  {ratingLoading ? t('rating_submitting') : myRating ? t('rating_update') : t('rating_submit')}
+                </button>
+              </div>
+            )}
+
+            {/* Recent comments */}
+            {ratingStats?.recent?.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{t('rating_reviews')}</p>
+                {ratingStats.recent.map((r, i) => (
+                  <div key={i} className="flex gap-2 items-start">
+                    <Stars value={r.rating} size="sm" />
+                    <p className="text-sm text-gray-600 leading-relaxed flex-1">"{r.comment}"</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {canManage && (
