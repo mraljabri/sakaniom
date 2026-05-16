@@ -13,6 +13,8 @@ import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import TermsPage from './pages/TermsPage';
 import LandlordPage from './pages/LandlordPage';
+import SaleListingsPage from './pages/SaleListingsPage';
+import CreateSaleListingPage from './pages/CreateSaleListingPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import VerifySuccessPage from './pages/VerifySuccessPage';
 
@@ -41,6 +43,8 @@ export default function App() {
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/landlord/:id" element={<LandlordPage />} />
+        <Route path="/buy" element={<SaleListingsPage />} />
+        <Route path="/sell-listing" element={<ProtectedRoute><CreateSaleListingPage /></ProtectedRoute>} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/verify-success" element={<VerifySuccessPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -20,6 +20,7 @@ const typeColors = {
 export default function ListingCard({ listing }) {
   const { t } = useLanguage();
   const imgSrc = mediaUrl(listing.photos?.[0]);
+  const isSale = listing.listing_purpose === 'sale';
   const furnishedKey = listing.furnished === 'furnished' ? 'furnished' : listing.furnished === 'semi-furnished' ? 'semi_furnished' : 'unfurnished';
   const bedsLabel = listing.bedrooms === 0 ? t('detail_studio') : `${listing.bedrooms} ${t('detail_bed')}`;
   const periodKey = listing.price_period === 'week' ? 'detail_per_week' : listing.price_period === 'day' ? 'detail_per_day' : 'detail_per_month';
@@ -30,9 +31,14 @@ export default function ListingCard({ listing }) {
         <img src={imgSrc} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={e => { e.target.src = PLACEHOLDER; }} />
         <div className="absolute top-3 start-3 flex gap-1.5 flex-wrap">
-          <span className={`badge ${typeColors[listing.property_type] || 'bg-gray-100 text-gray-600'}`}>
-            {t(listing.property_type) || listing.property_type}
-          </span>
+          {/* For Sale / type badge */}
+          {isSale ? (
+            <span className="badge bg-emerald-600 text-white">{t('sale_badge')}</span>
+          ) : (
+            <span className={`badge ${typeColors[listing.property_type] || 'bg-gray-100 text-gray-600'}`}>
+              {t(listing.property_type) || listing.property_type}
+            </span>
+          )}
           {listing.photos?.length > 1 && (
             <span className="badge bg-black/50 text-white">
               <svg className="w-3 h-3 me-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/></svg>
@@ -41,9 +47,15 @@ export default function ListingCard({ listing }) {
           )}
         </div>
         <div className="absolute bottom-3 end-3">
-          <span className="bg-primary-600 text-white font-bold text-sm px-3 py-1.5 rounded-lg shadow">
-            OMR {listing.price?.toLocaleString()}<span className="font-normal text-xs opacity-90"> {t(periodKey)}</span>
-          </span>
+          {isSale ? (
+            <span className="bg-emerald-600 text-white font-bold text-sm px-3 py-1.5 rounded-lg shadow">
+              OMR {listing.price?.toLocaleString()}
+            </span>
+          ) : (
+            <span className="bg-primary-600 text-white font-bold text-sm px-3 py-1.5 rounded-lg shadow">
+              OMR {listing.price?.toLocaleString()}<span className="font-normal text-xs opacity-90"> {t(periodKey)}</span>
+            </span>
+          )}
         </div>
       </div>
 

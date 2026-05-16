@@ -85,8 +85,22 @@ export function LanguageProvider({ children }) {
     { value: 'unfurnished',    label: t('unfurnished') },
   ];
 
+  const OWNERSHIP_TYPES = [
+    { value: '',                  label: isRTL ? '— اختر نوع الملكية —' : '— Select ownership type —' },
+    { value: 'freehold',          label: t('ownership_freehold') },
+    { value: 'leasehold',         label: t('ownership_leasehold') },
+    { value: 'investment_zone',   label: t('ownership_investment') },
+    { value: 'other',             label: t('ownership_other') },
+  ];
+
+  const SELLER_TYPES = [
+    { value: '',      label: isRTL ? '— اختر نوع البائع —' : '— Select seller type —' },
+    { value: 'owner', label: t('seller_owner') },
+    { value: 'agent', label: t('seller_agent') },
+  ];
+
   return (
-    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS }}>
+    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS, OWNERSHIP_TYPES, SELLER_TYPES }}>
       {children}
     </LanguageContext.Provider>
   );

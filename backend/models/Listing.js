@@ -17,6 +17,9 @@ const listingSchema = new mongoose.Schema({
   contract_period:  { type: String, default: 'no_contract' },
   family_status:    { type: String, enum: ['family', 'non_family', 'both'], default: 'both' },
   payment_method:   { type: String, default: 'cash' },
+  listing_purpose: { type: String, enum: ['rent', 'sale'], default: 'rent' },
+  ownership_type:  { type: String, default: '' },   // freehold, leasehold, investment_zone, other
+  seller_type:     { type: String, default: '' },   // owner, agent
   contact_name:  { type: String, required: true },
   contact_phone: { type: String, required: true },
   contact_email: { type: String, default: '' },

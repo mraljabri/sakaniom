@@ -110,6 +110,9 @@ export default function DashboardPage() {
                       <span className={`badge text-xs ${l.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                         {l.status}
                       </span>
+                      {l.listing_purpose === 'sale' && (
+                        <span className="badge text-xs bg-emerald-100 text-emerald-700">{t('sale_badge')}</span>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-3 text-xs text-gray-500">
                       <span>📍 {l.neighborhood ? `${l.neighborhood}, ` : ''}{l.city}</span>
@@ -123,14 +126,22 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="text-end flex-shrink-0">
-                    <p className="font-bold text-primary-600">OMR {l.price?.toLocaleString()}</p>
-                    <p className="text-xs text-gray-400">{t('dash_per_month')}</p>
+                    <p className={`font-bold ${l.listing_purpose === 'sale' ? 'text-emerald-600' : 'text-primary-600'}`}>
+                      OMR {l.price?.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {l.listing_purpose === 'sale' ? t('sale_badge') : t('dash_per_month')}
+                    </p>
                   </div>
 
                   <div className="flex flex-col gap-2 flex-shrink-0">
                     <Link to={`/listings/${listingId}`}
                       className="text-xs border border-gray-300 hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg transition-colors text-center">
                       {t('dash_view')}
+                    </Link>
+                    <Link to={l.listing_purpose === 'sale' ? `/edit-listing/${listingId}` : `/edit-listing/${listingId}`}
+                      className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg transition-colors text-center">
+                      {t('dash_edit')}
                     </Link>
                     <button onClick={() => handleDelete(listingId, l.title)} disabled={deletingId === listingId}
                       className="text-xs bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">

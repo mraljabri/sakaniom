@@ -33,9 +33,16 @@ const upload = multer({
 
 function buildQuery(q) {
   const query = { status: 'active' };
+  // Filter by purpose — default shows rentals (including old listings without the field)
+  if (q.listing_purpose === 'sale') {
+    query.listing_purpose = 'sale';
+  } else {
+    query.listing_purpose = { $ne: 'sale' };
+  }
   if (q.city)          query.city = q.city;
   if (q.property_type) query.property_type = q.property_type;
   if (q.furnished)     query.furnished = q.furnished;
+  if (q.ownership_type) query.ownership_type = q.ownership_type;
   if (q.min_price || q.max_price) {
     query.price = {};
     if (q.min_price) query.price.$gte = Number(q.min_price);
@@ -117,7 +124,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', authenticateToken, requireCreator,
   upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'videos', maxCount: 2 }]),
   async (req, res) => {
-    const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email, show_email } = req.body;
+    const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, listing_purpose, ownership_type, seller_type, contact_name, contact_phone, contact_email, show_email } = req.body;
 
     if (!title || !property_type || !city || !price || bedrooms == null || bathrooms == null || !contact_name || !contact_phone)
       return res.status(400).json({ error: 'Please fill in all required fields.' });
@@ -136,6 +143,9 @@ router.post('/', authenticateToken, requireCreator,
         bedrooms: Number(bedrooms), bathrooms: Number(bathrooms),
         area_sqm: area_sqm ? Number(area_sqm) : null,
         furnished: furnished || 'unfurnished',
+        listing_purpose: listing_purpose || 'rent',
+        ownership_type: ownership_type || '',
+        seller_type: seller_type || '',
         contract_period: contract_period || 'no_contract',
         family_status: family_status || 'both',
         payment_method: payment_method || 'cash',
@@ -161,7 +171,7 @@ router.put('/:id', authenticateToken, requireCreator,
       const listing = await Listing.findOne({ _id: req.params.id, creatorId: req.user.id });
       if (!listing) return res.status(404).json({ error: 'Listing not found or access denied.' });
 
-      const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, contact_name, contact_phone, contact_email, show_email } = req.body;
+      const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, listing_purpose, ownership_type, seller_type, contact_name, contact_phone, contact_email, show_email } = req.body;
 
       if (title)         listing.title         = title.trim();
       if (description != null) listing.description = description.trim();
@@ -170,6 +180,8 @@ router.put('/:id', authenticateToken, requireCreator,
       if (contract_period) listing.contract_period = contract_period;
       if (family_status)   listing.family_status   = family_status;
       if (payment_method)  listing.payment_method  = payment_method;
+      if (ownership_type != null) listing.ownership_type = ownership_type;
+      if (seller_type != null)    listing.seller_type    = seller_type;
       if (neighborhood != null) listing.neighborhood = neighborhood.trim();
       if (price)         listing.price         = Number(price);
       if (price_period)  listing.price_period  = price_period;
