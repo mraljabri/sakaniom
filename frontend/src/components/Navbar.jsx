@@ -32,7 +32,7 @@ export default function Navbar() {
     <button onClick={toggle}
       className={`flex items-center gap-1.5 text-sm font-semibold border border-gray-300 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors ${mobile ? 'w-full justify-center' : ''}`}
       title={lang === 'en' ? 'Switch to Arabic' : 'Switch to English'}>
-      <span className="text-base leading-none">{lang === 'en' ? '🇴🇲' : '🇬🇧'}</span>
+      <span className="text-base leading-none">{lang === 'en' ? '🇬🇧' : '🇴🇲'}</span>
       <span className="text-gray-700">{lang === 'en' ? 'العربية' : 'English'}</span>
     </button>
   );

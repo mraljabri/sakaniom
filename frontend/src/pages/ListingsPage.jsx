@@ -6,7 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 export default function ListingsPage() {
   const [searchParams] = useSearchParams();
-  const { t, CITIES, TYPES, FURNISHED_OPTIONS } = useLanguage();
+  const { t, CITIES, TYPES, FURNISHED_OPTIONS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,6 +19,9 @@ export default function ListingsPage() {
     min_price: '',
     max_price: '',
     furnished: '',
+    contract_period: '',
+    family_status: '',
+    payment_method: '',
     search: searchParams.get('search') || '',
     sort: 'newest',
   });
@@ -39,7 +42,7 @@ export default function ListingsPage() {
   useEffect(() => { fetchListings(); }, [fetchListings]);
 
   const setFilter = (key, val) => setFilters(f => ({ ...f, [key]: val }));
-  const clearFilters = () => setFilters({ city: '', property_type: '', bedrooms: '', bathrooms: '', min_price: '', max_price: '', furnished: '', search: '', sort: 'newest' });
+  const clearFilters = () => setFilters({ city: '', property_type: '', bedrooms: '', bathrooms: '', min_price: '', max_price: '', furnished: '', contract_period: '', family_status: '', payment_method: '', search: '', sort: 'newest' });
   const activeCount = Object.entries(filters).filter(([k, v]) => v && k !== 'sort').length;
 
   const countLabel = loading
@@ -119,6 +122,35 @@ export default function ListingsPage() {
             </label>
           ))}
         </div>
+      </div>
+      <div>
+        <label className="label">{t('field_contract')}</label>
+        <select className="input text-sm" value={filters.contract_period} onChange={e => setFilter('contract_period', e.target.value)}>
+          <option value="">— {t('field_contract')} —</option>
+          {CONTRACT_OPTIONS.filter(o => o.value).map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="label">{t('field_family')}</label>
+        <div className="flex flex-wrap gap-2">
+          {FAMILY_OPTIONS.filter(o => o.value).map(o => (
+            <button key={o.value} onClick={() => setFilter('family_status', filters.family_status === o.value ? '' : o.value)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filters.family_status === o.value ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-600 border-gray-300 hover:border-primary-400'}`}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="label">{t('field_payment')}</label>
+        <select className="input text-sm" value={filters.payment_method} onChange={e => setFilter('payment_method', e.target.value)}>
+          <option value="">— {t('field_payment')} —</option>
+          {PAYMENT_OPTIONS.filter(o => o.value).map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
       </div>
       {activeCount > 0 && (
         <button onClick={clearFilters} className="w-full text-sm text-red-600 border border-red-200 hover:bg-red-50 py-2 rounded-lg transition-colors font-medium">

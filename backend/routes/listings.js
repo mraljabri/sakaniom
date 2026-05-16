@@ -39,10 +39,14 @@ function buildQuery(q) {
   } else {
     query.listing_purpose = { $ne: 'sale' };
   }
-  if (q.city)          query.city = q.city;
-  if (q.property_type) query.property_type = q.property_type;
-  if (q.furnished)     query.furnished = q.furnished;
-  if (q.ownership_type) query.ownership_type = q.ownership_type;
+  if (q.city)             query.city = q.city;
+  if (q.property_type)   query.property_type = q.property_type;
+  if (q.furnished)       query.furnished = q.furnished;
+  if (q.contract_period) query.contract_period = q.contract_period;
+  if (q.family_status)   query.family_status = q.family_status;
+  if (q.payment_method)  query.payment_method = q.payment_method;
+  if (q.ownership_type)  query.ownership_type = q.ownership_type;
+  if (q.seller_type)     query.seller_type = q.seller_type;
   if (q.min_price || q.max_price) {
     query.price = {};
     if (q.min_price) query.price.$gte = Number(q.min_price);

@@ -6,7 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 export default function SaleListingsPage() {
   const [searchParams] = useSearchParams();
-  const { t, CITIES, TYPES, OWNERSHIP_TYPES } = useLanguage();
+  const { t, CITIES, TYPES, OWNERSHIP_TYPES, SELLER_TYPES, FURNISHED_OPTIONS } = useLanguage();
   const [listings, setListings]   = useState([]);
   const [loading, setLoading]     = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -18,7 +18,9 @@ export default function SaleListingsPage() {
     bathrooms:      '',
     min_price:      '',
     max_price:      '',
+    furnished:      '',
     ownership_type: '',
+    seller_type:    '',
     search:         searchParams.get('search') || '',
     sort:           'newest',
   });
@@ -39,7 +41,7 @@ export default function SaleListingsPage() {
   useEffect(() => { fetchListings(); }, [fetchListings]);
 
   const setFilter = (key, val) => setFilters(f => ({ ...f, [key]: val }));
-  const clearFilters = () => setFilters({ city: '', property_type: '', bedrooms: '', bathrooms: '', min_price: '', max_price: '', ownership_type: '', search: '', sort: 'newest' });
+  const clearFilters = () => setFilters({ city: '', property_type: '', bedrooms: '', bathrooms: '', min_price: '', max_price: '', furnished: '', ownership_type: '', seller_type: '', search: '', sort: 'newest' });
   const activeCount = Object.entries(filters).filter(([k, v]) => v && k !== 'sort').length;
 
   const bedOptions = [
@@ -93,6 +95,28 @@ export default function SaleListingsPage() {
         </div>
       </div>
       <div>
+        <label className="label">{t('filter_baths')}</label>
+        <div className="flex flex-wrap gap-2">
+          {['1','2','3','4'].map(b => (
+            <button key={b} onClick={() => setFilter('bathrooms', filters.bathrooms === b ? '' : b)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filters.bathrooms === b ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-600 border-gray-300 hover:border-emerald-400'}`}>
+              {b}+
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="label">{t('filter_furnished')}</label>
+        <div className="flex flex-col gap-2">
+          {FURNISHED_OPTIONS.map(f => (
+            <label key={f.value} className="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="furnished_sale" value={f.value} checked={filters.furnished === f.value} onChange={() => setFilter('furnished', filters.furnished === f.value ? '' : f.value)} className="text-emerald-600" />
+              <span className="text-sm text-gray-700">{f.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div>
         <label className="label">{t('filter_ownership')}</label>
         <select className="input text-sm" value={filters.ownership_type} onChange={e => setFilter('ownership_type', e.target.value)}>
           <option value="">— {t('filter_ownership')} —</option>
@@ -100,6 +124,17 @@ export default function SaleListingsPage() {
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
+      </div>
+      <div>
+        <label className="label">{t('sale_seller_type')}</label>
+        <div className="flex flex-wrap gap-2">
+          {SELLER_TYPES.filter(s => s.value).map(s => (
+            <button key={s.value} onClick={() => setFilter('seller_type', filters.seller_type === s.value ? '' : s.value)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filters.seller_type === s.value ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-600 border-gray-300 hover:border-emerald-400'}`}>
+              {s.label}
+            </button>
+          ))}
+        </div>
       </div>
       {activeCount > 0 && (
         <button onClick={clearFilters} className="w-full text-sm text-red-600 border border-red-200 hover:bg-red-50 py-2 rounded-lg transition-colors font-medium">
