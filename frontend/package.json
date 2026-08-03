@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "vite",
     "build": "node node_modules/vite/bin/vite.js build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "npm run build && cap sync",
+    "cap:android": "npm run build && cap sync android && cap open android",
+    "cap:run": "npm run build && cap sync android && cap run android"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
