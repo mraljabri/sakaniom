@@ -167,12 +167,13 @@ export default function ListingsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
+      {/* Stacks on narrow phones so the title can't collide with the controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-gray-900">{t('page_listings_title')}</h1>
           <p className="text-gray-500 text-sm mt-0.5">{countLabel}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0">
           <select value={filters.sort} onChange={e => setFilter('sort', e.target.value)}
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
             <option value="newest">{t('sort_newest')}</option>
