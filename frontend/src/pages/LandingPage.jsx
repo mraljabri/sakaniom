@@ -9,6 +9,17 @@ export default function LandingPage() {
   const { t, lang, CITIES, TYPES } = useLanguage();
   const [rentListings, setRentListings]   = useState([]);
   const [saleListings, setSaleListings]   = useState([]);
+  const [quickCity, setQuickCity]     = useState('');
+  const [quickSearch, setQuickSearch] = useState('');
+  const [quickMode, setQuickMode]     = useState('rent');
+
+  const runQuickSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (quickCity)   params.set('city', quickCity);
+    if (quickSearch) params.set('search', quickSearch.trim());
+    navigate(`${quickMode === 'sale' ? '/buy' : '/listings'}?${params.toString()}`);
+  };
 
   useEffect(() => {
     axios.get('/api/listings', { params: { listing_purpose: 'rent' } })
@@ -35,7 +46,36 @@ export default function LandingPage() {
             {t('hero_title1')}<br />
             <span className="text-yellow-300">{t('hero_title2')}</span>
           </h1>
-          <p className="text-lg text-white/80 mb-12 max-w-2xl mx-auto">{t('hero_sub')}</p>
+          <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">{t('hero_sub')}</p>
+
+          {/* Quick search */}
+          <form onSubmit={runQuickSearch} className="max-w-3xl mx-auto mb-10 bg-white rounded-2xl shadow-xl p-3 flex flex-col sm:flex-row gap-2">
+            <div className="flex rounded-xl overflow-hidden border border-gray-200 flex-shrink-0">
+              <button type="button" onClick={() => setQuickMode('rent')}
+                className={`px-4 py-2.5 text-sm font-semibold transition-colors ${quickMode === 'rent' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
+                {t('nav_rent')}
+              </button>
+              <button type="button" onClick={() => setQuickMode('sale')}
+                className={`px-4 py-2.5 text-sm font-semibold transition-colors ${quickMode === 'sale' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
+                {t('nav_buy')}
+              </button>
+            </div>
+            <select value={quickCity} onChange={e => setQuickCity(e.target.value)}
+              className="flex-shrink-0 sm:w-44 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <option value="">{t('hero_all_cities')}</option>
+              {CITIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+            </select>
+            <input type="text" value={quickSearch} onChange={e => setQuickSearch(e.target.value)}
+              placeholder={t('filter_keyword_ph')}
+              className="flex-1 min-w-0 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+            <button type="submit"
+              className="flex-shrink-0 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {t('hero_search')}
+            </button>
+          </form>
 
           {/* Two big choice cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">

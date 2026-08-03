@@ -28,7 +28,7 @@ export default function ListingCard({ listing }) {
   return (
     <Link to={`/listings/${listing.id || listing._id}`} className="card group hover:shadow-md transition-shadow duration-200 flex flex-col">
       <div className="relative overflow-hidden h-48 bg-gray-100">
-        <img src={imgSrc} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        <img src={imgSrc} alt={listing.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={e => { e.target.src = PLACEHOLDER; }} />
         <div className="absolute top-3 start-3 flex gap-1.5 flex-wrap">
           {/* For Sale / type badge */}

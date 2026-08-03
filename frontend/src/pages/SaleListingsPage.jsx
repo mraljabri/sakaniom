@@ -38,7 +38,11 @@ export default function SaleListingsPage() {
     }
   }, [filters]);
 
-  useEffect(() => { fetchListings(); }, [fetchListings]);
+  // Debounce so typing in the keyword box doesn't fire a request per keystroke
+  useEffect(() => {
+    const timer = setTimeout(fetchListings, 350);
+    return () => clearTimeout(timer);
+  }, [fetchListings]);
 
   const setFilter = (key, val) => setFilters(f => ({ ...f, [key]: val }));
   const clearFilters = () => setFilters({ city: '', property_type: '', bedrooms: '', bathrooms: '', min_price: '', max_price: '', furnished: '', ownership_type: '', seller_type: '', search: '', sort: 'newest' });
@@ -52,7 +56,8 @@ export default function SaleListingsPage() {
     { value: '4+', label: t('bed_4plus') },
   ];
 
-  const FilterPanel = () => (
+  // Plain JSX (not a nested component) so inputs keep focus across re-renders
+  const filterPanel = (
     <div className="space-y-6">
       <div>
         <label className="label">{t('filter_keyword')}</label>
@@ -187,7 +192,7 @@ export default function SaleListingsPage() {
               </svg>
               {t('filter_title')}
             </h2>
-            <FilterPanel />
+            {filterPanel}
           </div>
         </aside>
 
@@ -204,7 +209,7 @@ export default function SaleListingsPage() {
                   </svg>
                 </button>
               </div>
-              <FilterPanel />
+              {filterPanel}
             </div>
           </div>
         )}
