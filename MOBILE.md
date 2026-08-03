@@ -18,6 +18,37 @@ Android (buildable on Windows):
 iOS requires macOS and Xcode. It cannot be built from Windows — use a cloud
 build service (Codemagic, Expo EAS) or a Mac.
 
+## Windows environment notes (this machine)
+
+Two things had to be worked around locally. Both are machine setup, not
+project config.
+
+**1. `TEMP` must not be an 8.3 short path.** The Windows username contains
+spaces, so `TEMP` resolves to `C:\Users\MOHAMM~1\AppData\Local\Temp`. Windows
+AF_UNIX sockets reject short-path names on `connect`, and the JDK builds its
+NIO pipe over AF_UNIX — so Gradle dies with
+`java.io.IOException: Unable to establish loopback connection` before any
+compilation starts. Point `TEMP`/`TMP` at a plain path:
+
+```bash
+export TEMP='C:\gradletmp' TMP='C:\gradletmp'
+```
+
+To fix it permanently for Android Studio too, set `TEMP` and `TMP` to
+`C:\Temp` under System Properties → Environment Variables.
+
+**2. Gradle needs JDK 21, not Android Studio's bundled JDK.** The bundled JBR
+is Java 25; Gradle 8.14.3 only supports up to Java 24 and fails with
+`Unsupported class file major version 69`. A portable Temurin 21 lives at
+`C:\jdk21\jdk-21.0.12+8`:
+
+```bash
+export JAVA_HOME='C:\jdk21\jdk-21.0.12+8'
+```
+
+In Android Studio, set the same under Settings → Build, Execution, Deployment
+→ Build Tools → Gradle → Gradle JDK.
+
 ## Everyday workflow
 
 Any time web code changes, the native shell needs the fresh build copied in:
