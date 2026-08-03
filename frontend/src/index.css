@@ -6,6 +6,19 @@
   * { box-sizing: border-box; }
   body { font-family: 'Inter', system-ui, sans-serif; }
 
+  /* Native shell: keep the sticky navbar and page content clear of the
+     status bar / notch and the home indicator. .native-app is set at runtime
+     by initNative(), so the web build is untouched. */
+  .native-app body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .native-app nav.sticky { top: env(safe-area-inset-top); }
+
+  /* Suppress the mobile tap-highlight flash and overscroll bounce in-app */
+  .native-app * { -webkit-tap-highlight-color: transparent; }
+  .native-app body { overscroll-behavior-y: none; }
+
   /* Arabic font stack — uses system Arabic fonts, falls back to Inter */
   :root[lang="ar"] body,
   :root[lang="ar"] input,

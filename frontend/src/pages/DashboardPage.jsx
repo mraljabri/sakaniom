@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -7,11 +7,30 @@ import { useLanguage } from '../contexts/LanguageContext';
 const PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTJlOGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOTRhM2I4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gUGhvdG88L3RleHQ+PC9zdmc+';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [showDeleteAcct, setShowDeleteAcct] = useState(false);
+  const [acctPassword, setAcctPassword] = useState('');
+  const [acctError, setAcctError] = useState('');
+  const [acctDeleting, setAcctDeleting] = useState(false);
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    setAcctError('');
+    setAcctDeleting(true);
+    try {
+      await axios.delete('/api/auth/me', { data: { password: acctPassword } });
+      logout();
+      navigate('/');
+    } catch (err) {
+      setAcctError(err.response?.data?.error || 'Failed to delete account.');
+      setAcctDeleting(false);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -154,6 +173,60 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Danger zone — in-app account deletion (App Store Guideline 5.1.1(v)) */}
+      <div className="mt-8 bg-white rounded-xl border border-red-200 shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-red-100 bg-red-50">
+          <h2 className="font-semibold text-red-800">{t('danger_zone')}</h2>
+        </div>
+        <div className="p-5">
+          <h3 className="font-medium text-gray-900 mb-1">{t('del_acct_title')}</h3>
+          <p className="text-sm text-gray-500 mb-4 max-w-xl">{t('del_acct_desc')}</p>
+          <button onClick={() => { setShowDeleteAcct(true); setAcctError(''); setAcctPassword(''); }}
+            className="btn-danger text-sm">
+            {t('del_acct_btn')}
+          </button>
+        </div>
+      </div>
+
+      {/* Confirmation modal */}
+      {showDeleteAcct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => !acctDeleting && setShowDeleteAcct(false)} />
+          <form onSubmit={handleDeleteAccount}
+            className="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">{t('del_acct_confirm_title')}</h3>
+            <p className="text-sm text-gray-600 mb-5">
+              {t('del_acct_confirm_desc', { n: listings.length })}
+            </p>
+
+            <label className="label">{t('del_acct_pw_label')}</label>
+            <input type="password" value={acctPassword} onChange={e => setAcctPassword(e.target.value)}
+              placeholder={t('del_acct_pw_ph')} autoComplete="current-password" required
+              className="input mb-3" />
+
+            {acctError && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3">{acctError}</p>
+            )}
+
+            <div className="flex gap-3 justify-end">
+              <button type="button" onClick={() => setShowDeleteAcct(false)} disabled={acctDeleting}
+                className="btn-secondary text-sm">
+                {t('del_acct_cancel')}
+              </button>
+              <button type="submit" disabled={acctDeleting || !acctPassword}
+                className="btn-danger text-sm disabled:opacity-50">
+                {acctDeleting ? t('del_acct_deleting') : t('del_acct_go')}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,14 +5,16 @@ import axios from 'axios';
 import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { resolveBaseURL } from './config/api';
+import { initNative } from './native';
 import './index.css';
 
-// In production the frontend is served by the same Express server,
-// so all /api calls go to the same origin automatically.
-// In dev, Vite's proxy handles it.
-if (import.meta.env.VITE_API_URL) {
-  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-}
+// Web production is same-origin and dev goes through the Vite proxy, so this
+// resolves to '' there. Native builds get an absolute URL.
+const baseURL = resolveBaseURL();
+if (baseURL) axios.defaults.baseURL = baseURL;
+
+initNative();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

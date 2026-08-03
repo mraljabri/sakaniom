@@ -14,10 +14,26 @@ const app  = express();
 const PORT = process.env.PORT || 5000;
 const isProd = process.env.NODE_ENV === 'production';
 
-// CORS — allow local dev frontend; in production same origin so not needed
-if (!isProd) {
-  app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'], credentials: true }));
-}
+// CORS — the web build is same-origin in production, but the Capacitor native
+// apps load from localhost web views and call the API cross-origin, so those
+// schemes have to be allowed in every environment.
+const allowedOrigins = [
+  'http://localhost:5173',   // Vite dev
+  'http://localhost:5174',
+  'https://localhost',       // Capacitor Android (androidScheme: https)
+  'capacitor://localhost',   // Capacitor iOS
+  'ionic://localhost',       // legacy Capacitor/Ionic web view
+];
+if (process.env.BASE_URL) allowedOrigins.push(process.env.BASE_URL);
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Native web views and server-to-server calls may omit Origin entirely.
+    if (!origin) return cb(null, true);
+    cb(null, allowedOrigins.includes(origin));
+  },
+  credentials: true,
+}));
 
 app.use(express.json());
 
