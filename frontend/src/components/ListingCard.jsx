@@ -26,7 +26,7 @@ export default function ListingCard({ listing }) {
   const periodKey = listing.price_period === 'week' ? 'detail_per_week' : listing.price_period === 'day' ? 'detail_per_day' : 'detail_per_month';
 
   return (
-    <Link to={`/listings/${listing.id || listing._id}`} className="card group hover:shadow-md transition-shadow duration-200 flex flex-col">
+    <Link to={`/listings/${listing.id || listing._id}`} className="card press group hover:shadow-md flex flex-col">
       <div className="relative overflow-hidden h-48 bg-gray-100">
         <img src={imgSrc} alt={listing.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={e => { e.target.src = PLACEHOLDER; }} />

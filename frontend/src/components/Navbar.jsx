@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { isAppShell } from '../config/api';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -36,6 +37,33 @@ export default function Navbar() {
       <span className="text-gray-700">{lang === 'en' ? 'العربية' : 'English'}</span>
     </button>
   );
+
+  const Logo = () => (
+    <Link to="/" className="flex items-center gap-2 flex-shrink-0 press">
+      <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+        </svg>
+      </div>
+      <span className="text-xl font-bold text-gray-900">
+        {lang === 'ar' ? 'سكني عُمان' : <><span>Sakani</span><span className="text-primary-600">OM</span></>}
+      </span>
+    </Link>
+  );
+
+  // App shell: the bottom tab bar owns navigation, so the top bar is just a
+  // frosted title bar with the logo and the language switch.
+  if (isAppShell) {
+    return (
+      <nav className="sticky top-0 z-50 bg-white/85 border-b border-gray-200/80"
+        style={{ WebkitBackdropFilter: 'saturate(180%) blur(20px)', backdropFilter: 'saturate(180%) blur(20px)' }}>
+        <div className="flex items-center justify-between h-14 px-4">
+          <Logo />
+          <LangToggle />
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">

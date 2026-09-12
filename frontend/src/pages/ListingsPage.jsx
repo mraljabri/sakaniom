@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ListingCard from '../components/ListingCard';
@@ -82,7 +83,7 @@ export default function ListingsPage() {
         <div className="flex flex-wrap gap-2">
           {TYPES.map(tp => (
             <button key={tp.value} onClick={() => setFilter('property_type', filters.property_type === tp.value ? '' : tp.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filters.property_type === tp.value ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-600 border-gray-300 hover:border-primary-400'}`}>
+              className="chip" aria-pressed={filters.property_type === tp.value}>
               {tp.label}
             </button>
           ))}
@@ -100,7 +101,7 @@ export default function ListingsPage() {
         <div className="flex flex-wrap gap-2">
           {bedOptions.map(b => (
             <button key={b.value} onClick={() => setFilter('bedrooms', filters.bedrooms === b.value ? '' : b.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filters.bedrooms === b.value ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-600 border-gray-300 hover:border-primary-400'}`}>
+              className="chip" aria-pressed={filters.bedrooms === b.value}>
               {b.label}
             </button>
           ))}
@@ -111,7 +112,7 @@ export default function ListingsPage() {
         <div className="flex flex-wrap gap-2">
           {['1','2','3','4'].map(b => (
             <button key={b} onClick={() => setFilter('bathrooms', filters.bathrooms === b ? '' : b)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filters.bathrooms === b ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-600 border-gray-300 hover:border-primary-400'}`}>
+              className="chip" aria-pressed={filters.bathrooms === b}>
               {b}+
             </button>
           ))}
@@ -142,7 +143,7 @@ export default function ListingsPage() {
         <div className="flex flex-wrap gap-2">
           {FAMILY_OPTIONS.filter(o => o.value).map(o => (
             <button key={o.value} onClick={() => setFilter('family_status', filters.family_status === o.value ? '' : o.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filters.family_status === o.value ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-600 border-gray-300 hover:border-primary-400'}`}>
+              className="chip" aria-pressed={filters.family_status === o.value}>
               {o.label}
             </button>
           ))}
@@ -205,21 +206,30 @@ export default function ListingsPage() {
         </aside>
 
         {/* Mobile Sidebar Overlay */}
-        {sidebarOpen && (
-          <div className="lg:hidden fixed inset-0 z-40 flex">
-            <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
-            <div className="relative ms-auto w-80 bg-white h-full overflow-y-auto p-5 shadow-xl">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold text-gray-900">{t('filter_title')}</h2>
-                <button onClick={() => setSidebarOpen(false)} className="p-1 text-gray-500 hover:text-gray-700">
+        {/* Mobile: filters slide up as a bottom sheet. Portaled to <body> so no
+            animated/transformed ancestor can capture its fixed positioning. */}
+        {sidebarOpen && createPortal(
+          <div className="lg:hidden">
+            <div className="sheet-backdrop" onClick={() => setSidebarOpen(false)} />
+            <div className="sheet" role="dialog" aria-label={t('filter_title')}>
+              <div className="sheet-handle" />
+              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+                <h2 className="font-semibold text-gray-900 text-lg">{t('filter_title')}</h2>
+                <button onClick={() => setSidebarOpen(false)} className="press p-2 -me-2 rounded-full text-gray-500" aria-label="Close">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
-              {filterPanel}
+              <div className="overflow-y-auto px-5 py-4 flex-1">{filterPanel}</div>
+              <div className="px-5 py-3 border-t border-gray-100">
+                <button onClick={() => setSidebarOpen(false)} className="btn-primary w-full">
+                  {t('filter_show_results')}{!loading && ` (${listings.length})`}
+                </button>
+              </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
 
         {/* Listings Grid */}

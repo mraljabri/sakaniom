@@ -1,7 +1,9 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
+import { isAppShell } from './config/api';
 import Navbar from './components/Navbar';
+import TabBar from './components/TabBar';
 import ScrollToTop from './components/ScrollToTop';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -29,28 +31,35 @@ function ProtectedRoute({ children, requireCreator = false, requireAdmin = false
 }
 
 export default function App() {
+  const { pathname } = useLocation();
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    // In the app shell, bottom padding keeps content clear of the tab bar.
+    <div className={`min-h-screen bg-gray-50 ${isAppShell ? 'pb-24' : ''}`}>
       <ScrollToTop />
       <Navbar />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/listings" element={<ListingsPage />} />
-        <Route path="/listings/:id" element={<ListingDetailPage />} />
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/create-listing" element={<ProtectedRoute><CreateListingPage /></ProtectedRoute>} />
-        <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/landlord/:id" element={<LandlordPage />} />
-        <Route path="/buy" element={<SaleListingsPage />} />
-        <Route path="/sell-listing" element={<ProtectedRoute><CreateSaleListingPage /></ProtectedRoute>} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/verify-success" element={<VerifySuccessPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      {/* Re-keying on pathname replays the enter animation on every navigation. */}
+      <div key={isAppShell ? pathname : 'static'} className={isAppShell ? 'page-enter' : undefined}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/listings" element={<ListingsPage />} />
+          <Route path="/listings/:id" element={<ListingDetailPage />} />
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/create-listing" element={<ProtectedRoute><CreateListingPage /></ProtectedRoute>} />
+          <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/landlord/:id" element={<LandlordPage />} />
+          <Route path="/buy" element={<SaleListingsPage />} />
+          <Route path="/sell-listing" element={<ProtectedRoute><CreateSaleListingPage /></ProtectedRoute>} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/verify-success" element={<VerifySuccessPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+      {isAppShell && <TabBar />}
     </div>
   );
 }

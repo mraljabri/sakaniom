@@ -37,7 +37,7 @@ export default function LandingPage() {
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-400 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
             {t('hero_badge')}
@@ -50,13 +50,14 @@ export default function LandingPage() {
 
           {/* Quick search */}
           <form onSubmit={runQuickSearch} className="max-w-3xl mx-auto mb-10 bg-white rounded-2xl shadow-xl p-3 flex flex-col sm:flex-row gap-2">
-            <div className="flex rounded-xl overflow-hidden border border-gray-200 flex-shrink-0">
-              <button type="button" onClick={() => setQuickMode('rent')}
-                className={`px-4 py-2.5 text-sm font-semibold transition-colors ${quickMode === 'rent' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
+            {/* iOS segmented control */}
+            <div className="segmented flex-shrink-0 sm:w-40" role="tablist">
+              <button type="button" role="tab" aria-selected={quickMode === 'rent'} onClick={() => setQuickMode('rent')}
+                className={quickMode === 'rent' ? '!text-primary-700' : ''}>
                 {t('nav_rent')}
               </button>
-              <button type="button" onClick={() => setQuickMode('sale')}
-                className={`px-4 py-2.5 text-sm font-semibold transition-colors ${quickMode === 'sale' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
+              <button type="button" role="tab" aria-selected={quickMode === 'sale'} onClick={() => setQuickMode('sale')}
+                className={quickMode === 'sale' ? '!text-emerald-700' : ''}>
                 {t('nav_buy')}
               </button>
             </div>
@@ -69,7 +70,7 @@ export default function LandingPage() {
               placeholder={t('filter_keyword_ph')}
               className="flex-1 min-w-0 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />
             <button type="submit"
-              className="flex-shrink-0 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
+              className="press flex-shrink-0 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-3 sm:py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -81,7 +82,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
             {/* Rent card */}
             <Link to="/listings"
-              className="group bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:border-white/60 rounded-2xl p-8 text-start transition-all duration-200 hover:scale-[1.02]">
+              className="press group bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:border-white/60 rounded-3xl p-6 sm:p-8 text-start hover:scale-[1.02]">
               <div className="w-14 h-14 bg-primary-500 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary-400 transition-colors">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -99,7 +100,7 @@ export default function LandingPage() {
 
             {/* Buy card */}
             <Link to="/buy"
-              className="group bg-yellow-400/10 hover:bg-yellow-400/20 backdrop-blur-sm border-2 border-yellow-400/30 hover:border-yellow-400/70 rounded-2xl p-8 text-start transition-all duration-200 hover:scale-[1.02]">
+              className="press group bg-yellow-400/10 hover:bg-yellow-400/20 backdrop-blur-sm border-2 border-yellow-400/30 hover:border-yellow-400/70 rounded-3xl p-6 sm:p-8 text-start hover:scale-[1.02]">
               <div className="w-14 h-14 bg-yellow-400 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-yellow-300 transition-colors">
                 <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />

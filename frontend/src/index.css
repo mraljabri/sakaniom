@@ -4,20 +4,11 @@
 
 @layer base {
   * { box-sizing: border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; }
-
-  /* Native shell: keep the sticky navbar and page content clear of the
-     status bar / notch and the home indicator. .native-app is set at runtime
-     by initNative(), so the web build is untouched. */
-  .native-app body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
-  .native-app nav.sticky { top: env(safe-area-inset-top); }
-
-  /* Suppress the mobile tap-highlight flash and overscroll bounce in-app */
-  .native-app * { -webkit-tap-highlight-color: transparent; }
-  .native-app body { overscroll-behavior-y: none; }
 
   /* Arabic font stack — uses system Arabic fonts, falls back to Inter */
   :root[lang="ar"] body,
@@ -27,28 +18,126 @@
   :root[lang="ar"] button {
     font-family: 'Segoe UI', 'Tahoma', 'Arial', system-ui, sans-serif;
   }
+
+  /* ── Native shell: keep chrome clear of the status bar / notch ────────── */
+  .native-app body { padding-top: env(safe-area-inset-top); }
+  .native-app nav.sticky { top: env(safe-area-inset-top); }
+  .native-app * { -webkit-tap-highlight-color: transparent; }
+  .native-app body { overscroll-behavior-y: none; }
+
+  /* ── App shell: iOS-style feel (also previewable on web with ?native=1) ── */
+  .app-shell body {
+    background: #f2f2f7;               /* iOS system grouped background */
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app-shell { scroll-behavior: smooth; }
+  .app-shell * { -webkit-overflow-scrolling: touch; }
 }
 
 @layer components {
+  /* Press feedback shared by every tappable surface. Transform-only so it
+     stays at 60fps on the web view. */
+  .press {
+    @apply transition-transform duration-150 ease-out active:scale-[0.97] select-none;
+  }
+
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply press bg-primary-600 hover:bg-primary-700 text-white font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2;
   }
   .btn-secondary {
-    @apply bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold px-5 py-2.5 rounded-lg transition-colors duration-200;
+    @apply press bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 font-semibold px-5 py-2.5 rounded-xl inline-flex items-center justify-center gap-2;
   }
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200;
+    @apply press bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-xl inline-flex items-center justify-center gap-2;
   }
   .input {
-    @apply w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition;
+    @apply w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition;
   }
   .label {
     @apply block text-sm font-medium text-gray-700 mb-1;
   }
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden;
   }
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
+
+  /* iOS segmented control */
+  .segmented {
+    @apply inline-flex bg-gray-100 rounded-xl p-1 gap-0.5;
+  }
+  .segmented > button {
+    @apply press flex-1 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 transition-colors;
+  }
+  .segmented > button[aria-selected="true"] {
+    @apply bg-white text-gray-900 shadow-sm;
+  }
+
+  /* Pill filter chip */
+  .chip {
+    @apply press px-3.5 py-2 rounded-full text-sm font-medium border transition-colors;
+    @apply bg-white text-gray-700 border-gray-200;
+  }
+  .chip[aria-pressed="true"] {
+    @apply bg-primary-600 text-white border-primary-600;
+  }
+  .chip-emerald[aria-pressed="true"] {
+    @apply bg-emerald-600 border-emerald-600;
+  }
+
+  /* ── App shell: taller touch targets, rounder corners ─────────────────── */
+  .app-shell .btn-primary,
+  .app-shell .btn-secondary,
+  .app-shell .btn-danger { @apply min-h-[48px] rounded-2xl text-base; }
+  .app-shell .input       { @apply min-h-[48px] rounded-2xl bg-white; }
+  .app-shell .card        { @apply rounded-3xl; }
+  .app-shell .chip        { @apply min-h-[40px]; }
+
+  /* Bottom tab bar */
+  .tab-bar {
+    @apply fixed inset-x-0 bottom-0 z-40 border-t border-gray-200/80 bg-white/85;
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .tab-bar a, .tab-bar button {
+    @apply press flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-gray-500;
+  }
+  .tab-bar a[aria-current="page"] { @apply text-primary-600; }
+
+  /* Bottom sheet */
+  .sheet-backdrop { @apply fixed inset-0 z-50 bg-black/40; animation: fade-in 180ms ease-out; }
+  .sheet {
+    @apply fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[88vh] flex flex-col;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: sheet-up 260ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .sheet-handle { @apply mx-auto mt-2.5 mb-1 h-1.5 w-10 rounded-full bg-gray-300; }
+
+  /* iOS action sheet */
+  .action-sheet {
+    @apply fixed inset-x-3 z-50 flex flex-col gap-2;
+    bottom: calc(env(safe-area-inset-bottom) + 12px);
+    animation: sheet-up 240ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .action-sheet-group { @apply bg-white/95 rounded-2xl overflow-hidden divide-y divide-gray-200; }
+  .action-sheet-group > * {
+    @apply press w-full py-4 text-center text-[17px] text-primary-600 font-medium flex items-center justify-center gap-2 bg-transparent;
+  }
+  .action-sheet-cancel { @apply press w-full bg-white rounded-2xl py-4 text-center text-[17px] font-semibold text-primary-600; }
+
+  /* Route transition. No fill-mode on purpose: a filled transform would make
+     this wrapper the containing block for position:fixed descendants (sheets,
+     modals), pinning them to the page instead of the viewport. */
+  .page-enter { animation: page-in 220ms ease-out; }
+}
+
+@keyframes fade-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes sheet-up { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes page-in  { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .sheet, .action-sheet, .sheet-backdrop { animation: none; }
+  .press { transition: none; }
 }

@@ -1,10 +1,13 @@
 import { App } from '@capacitor/app';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { isNative } from './config/api';
+import { isNative, isAppShell } from './config/api';
 
-// Everything here is a no-op on the web build.
 export function initNative() {
+  // App-style chrome (tab bar, sheets, transitions). Also on in dev with ?native=1.
+  if (isAppShell) document.documentElement.classList.add('app-shell');
+
+  // Everything below needs the real Capacitor runtime.
   if (!isNative) return;
 
   document.documentElement.classList.add('native-app');

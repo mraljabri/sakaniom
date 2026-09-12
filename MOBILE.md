@@ -66,6 +66,21 @@ To skip Android Studio and deploy straight to a connected device:
 cd frontend && npm run cap:run
 ```
 
+## Previewing the app UI without a device
+
+The app-style chrome (bottom tab bar, bottom-sheet filters, page transitions,
+iOS-style controls) is gated behind an `app-shell` class that
+`src/native.js` adds at startup. It is always on inside Capacitor. In a dev
+build you can also switch it on in a normal browser:
+
+```
+http://localhost:5173/?native=1
+```
+
+Shrink the window to phone width and you get the same UI the APK renders.
+The query-param branch is compiled out of production builds, so the public
+website is never affected.
+
 ## How the API connection works
 
 The web build is same-origin, so it uses relative `/api` paths. A native web

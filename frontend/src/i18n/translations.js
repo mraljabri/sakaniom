@@ -17,6 +17,16 @@ const translations = {
     nav_creator: 'creator',
     nav_user: 'user',
 
+    // App tab bar
+    tab_home: 'Home',
+    tab_rent: 'Rent',
+    tab_buy: 'Buy',
+    tab_post: 'Post',
+    tab_account: 'Account',
+    post_sheet_title: 'What would you like to post?',
+    btn_cancel: 'Cancel',
+    filter_show_results: 'Show results',
+
     // Landing
     hero_badge: 'Oman\'s Real Estate Platform',
     hero_title1: 'Rent or Buy Property',
@@ -358,6 +368,16 @@ const translations = {
     nav_logout: 'تسجيل الخروج',
     nav_creator: 'مُعلن',
     nav_user: 'مستأجر',
+
+    // App tab bar
+    tab_home: 'الرئيسية',
+    tab_rent: 'إيجار',
+    tab_buy: 'شراء',
+    tab_post: 'نشر',
+    tab_account: 'حسابي',
+    post_sheet_title: 'ماذا تريد أن تنشر؟',
+    btn_cancel: 'إلغاء',
+    filter_show_results: 'عرض النتائج',
 
     // Landing
     hero_badge: 'منصة عُمان العقارية',
