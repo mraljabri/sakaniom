@@ -5,6 +5,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 const Listing = require('../models/Listing');
 const { authenticateToken, requireCreator } = require('../middleware/auth');
+const { wilayatsOf, governorateOf } = require('../data/locations');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -39,7 +40,11 @@ function buildQuery(q) {
   } else {
     query.listing_purpose = { $ne: 'sale' };
   }
+  // Location: a wilayat (city) is the precise match. A governorate alone
+  // expands to every wilayat in it, matched on `city`, so listings created
+  // before the governorate field existed are still found.
   if (q.city)             query.city = q.city;
+  else if (q.governorate) query.city = { $in: wilayatsOf(q.governorate) };
   if (q.property_type)   query.property_type = q.property_type;
   if (q.furnished)       query.furnished = q.furnished;
   if (q.contract_period) query.contract_period = q.contract_period;
@@ -142,7 +147,8 @@ router.post('/', authenticateToken, requireCreator,
       const listing = await Listing.create({
         creatorId: req.user.id, creatorName: req.user.name,
         title: title.trim(), description: description?.trim() || '',
-        property_type, city, neighborhood: neighborhood?.trim() || '',
+        property_type, city, governorate: governorateOf(city),
+        neighborhood: neighborhood?.trim() || '',
         price: Number(price), price_period: price_period || 'month',
         bedrooms: Number(bedrooms), bathrooms: Number(bathrooms),
         area_sqm: area_sqm ? Number(area_sqm) : null,
@@ -180,7 +186,7 @@ router.put('/:id', authenticateToken, requireCreator,
       if (title)         listing.title         = title.trim();
       if (description != null) listing.description = description.trim();
       if (property_type) listing.property_type = property_type;
-      if (city)          listing.city          = city;
+      if (city)        { listing.city = city; listing.governorate = governorateOf(city); }
       if (contract_period) listing.contract_period = contract_period;
       if (family_status)   listing.family_status   = family_status;
       if (payment_method)  listing.payment_method  = payment_method;

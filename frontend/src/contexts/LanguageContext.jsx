@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import translations from '../i18n/translations';
+import LOCATIONS from '../data/oman-locations.json';
 
 const LanguageContext = createContext(null);
 
@@ -25,19 +26,16 @@ export function LanguageProvider({ children }) {
 
   const isRTL = lang === 'ar';
 
-  // Localized city list (value stays English for the API, label is translated)
-  const CITIES = [
-    { value: 'Muscat',  label: t('city_muscat') },
-    { value: 'Salalah', label: t('city_salalah') },
-    { value: 'Sohar',   label: t('city_sohar') },
-    { value: 'Nizwa',   label: t('city_nizwa') },
-    { value: 'Sur',     label: t('city_sur') },
-    { value: 'Buraimi', label: t('city_buraimi') },
-    { value: 'Ibri',    label: t('city_ibri') },
-    { value: 'Rustaq',  label: t('city_rustaq') },
-    { value: 'Bahla',   label: t('city_bahla') },
-    { value: 'Khasab',  label: t('city_khasab') },
-  ];
+  // Oman's 11 governorates, each with its wilayats. Values stay English for
+  // the API; labels follow the current language.
+  const GOVERNORATES = LOCATIONS.map(g => ({
+    value: g.value,
+    label: isRTL ? g.ar : g.en,
+    wilayats: g.wilayats.map(w => ({ value: w.value, label: isRTL ? w.ar : w.en })),
+  }));
+  // Flat list of every wilayat (kept for anything that still wants one list).
+  const CITIES = GOVERNORATES.flatMap(g => g.wilayats);
+  const governorateOf = city => GOVERNORATES.find(g => g.wilayats.some(w => w.value === city))?.value || '';
 
   const TYPES = [
     { value: 'Apartment', label: t('Apartment') },
@@ -100,7 +98,7 @@ export function LanguageProvider({ children }) {
   ];
 
   return (
-    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS, OWNERSHIP_TYPES, SELLER_TYPES }}>
+    <LanguageContext.Provider value={{ lang, toggle, t, isRTL, GOVERNORATES, CITIES, governorateOf, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS, OWNERSHIP_TYPES, SELLER_TYPES }}>
       {children}
     </LanguageContext.Provider>
   );

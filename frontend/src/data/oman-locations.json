@@ -1,0 +1,86 @@
+[
+  { "value": "Muscat", "en": "Muscat", "ar": "مسقط", "wilayats": [
+    { "value": "Muscat",     "en": "Muscat",     "ar": "مسقط" },
+    { "value": "Muttrah",    "en": "Muttrah",    "ar": "مطرح" },
+    { "value": "Bawshar",    "en": "Bawshar",    "ar": "بوشر" },
+    { "value": "Seeb",       "en": "Seeb",       "ar": "السيب" },
+    { "value": "Al Amerat",  "en": "Al Amerat",  "ar": "العامرات" },
+    { "value": "Qurayyat",   "en": "Qurayyat",   "ar": "قريات" }
+  ]},
+  { "value": "Dhofar", "en": "Dhofar", "ar": "ظفار", "wilayats": [
+    { "value": "Salalah",     "en": "Salalah",     "ar": "صلالة" },
+    { "value": "Taqah",       "en": "Taqah",       "ar": "طاقة" },
+    { "value": "Mirbat",      "en": "Mirbat",      "ar": "مرباط" },
+    { "value": "Sadah",       "en": "Sadah",       "ar": "سدح" },
+    { "value": "Rakhyut",     "en": "Rakhyut",     "ar": "رخيوت" },
+    { "value": "Dhalkut",     "en": "Dhalkut",     "ar": "ضلكوت" },
+    { "value": "Thumrait",    "en": "Thumrait",    "ar": "ثمريت" },
+    { "value": "Shalim and Hallaniyat Islands", "en": "Shalim & Hallaniyat Islands", "ar": "شليم وجزر الحلانيات" },
+    { "value": "Al Mazyunah", "en": "Al Mazyunah", "ar": "المزيونة" },
+    { "value": "Muqshin",     "en": "Muqshin",     "ar": "مقشن" }
+  ]},
+  { "value": "Musandam", "en": "Musandam", "ar": "مسندم", "wilayats": [
+    { "value": "Khasab", "en": "Khasab", "ar": "خصب" },
+    { "value": "Bukha",  "en": "Bukha",  "ar": "بخا" },
+    { "value": "Daba",   "en": "Daba",   "ar": "دبا" },
+    { "value": "Madha",  "en": "Madha",  "ar": "مدحاء" }
+  ]},
+  { "value": "Al Buraimi", "en": "Al Buraimi", "ar": "البريمي", "wilayats": [
+    { "value": "Buraimi",     "en": "Al Buraimi",  "ar": "البريمي" },
+    { "value": "Mahdah",      "en": "Mahdah",      "ar": "محضة" },
+    { "value": "Al Sunaynah", "en": "Al Sunaynah", "ar": "السنينة" }
+  ]},
+  { "value": "Ad Dakhiliyah", "en": "Ad Dakhiliyah", "ar": "الداخلية", "wilayats": [
+    { "value": "Nizwa",              "en": "Nizwa",              "ar": "نزوى" },
+    { "value": "Bahla",              "en": "Bahla",              "ar": "بهلاء" },
+    { "value": "Manah",              "en": "Manah",              "ar": "منح" },
+    { "value": "Al Hamra",           "en": "Al Hamra",           "ar": "الحمراء" },
+    { "value": "Adam",               "en": "Adam",               "ar": "أدم" },
+    { "value": "Izki",               "en": "Izki",               "ar": "إزكي" },
+    { "value": "Samail",             "en": "Samail",             "ar": "سمائل" },
+    { "value": "Bidbid",             "en": "Bidbid",             "ar": "بدبد" },
+    { "value": "Al Jabal Al Akhdar", "en": "Al Jabal Al Akhdar", "ar": "الجبل الأخضر" }
+  ]},
+  { "value": "Al Batinah North", "en": "Al Batinah North", "ar": "شمال الباطنة", "wilayats": [
+    { "value": "Sohar",       "en": "Sohar",       "ar": "صحار" },
+    { "value": "Shinas",      "en": "Shinas",      "ar": "شناص" },
+    { "value": "Liwa",        "en": "Liwa",        "ar": "لوى" },
+    { "value": "Saham",       "en": "Saham",       "ar": "صحم" },
+    { "value": "Al Khaburah", "en": "Al Khaburah", "ar": "الخابورة" },
+    { "value": "Al Suwaiq",   "en": "Al Suwaiq",   "ar": "السويق" }
+  ]},
+  { "value": "Al Batinah South", "en": "Al Batinah South", "ar": "جنوب الباطنة", "wilayats": [
+    { "value": "Rustaq",         "en": "Rustaq",         "ar": "الرستاق" },
+    { "value": "Al Awabi",       "en": "Al Awabi",       "ar": "العوابي" },
+    { "value": "Nakhal",         "en": "Nakhal",         "ar": "نخل" },
+    { "value": "Wadi Al Maawil", "en": "Wadi Al Maawil", "ar": "وادي المعاول" },
+    { "value": "Barka",          "en": "Barka",          "ar": "بركاء" },
+    { "value": "Al Musanaah",    "en": "Al Musanaah",    "ar": "المصنعة" }
+  ]},
+  { "value": "Ash Sharqiyah North", "en": "Ash Sharqiyah North", "ar": "شمال الشرقية", "wilayats": [
+    { "value": "Ibra",             "en": "Ibra",             "ar": "إبراء" },
+    { "value": "Al Mudaybi",       "en": "Al Mudaybi",       "ar": "المضيبي" },
+    { "value": "Bidiyah",          "en": "Bidiyah",          "ar": "بدية" },
+    { "value": "Al Qabil",         "en": "Al Qabil",         "ar": "القابل" },
+    { "value": "Wadi Bani Khalid", "en": "Wadi Bani Khalid", "ar": "وادي بني خالد" },
+    { "value": "Dema Wa Thaieen",  "en": "Dema Wa Thaieen",  "ar": "دماء والطائيين" }
+  ]},
+  { "value": "Ash Sharqiyah South", "en": "Ash Sharqiyah South", "ar": "جنوب الشرقية", "wilayats": [
+    { "value": "Sur",                  "en": "Sur",                  "ar": "صور" },
+    { "value": "Al Kamil Wal Wafi",    "en": "Al Kamil Wal Wafi",    "ar": "الكامل والوافي" },
+    { "value": "Jalan Bani Bu Hassan", "en": "Jalan Bani Bu Hassan", "ar": "جعلان بني بو حسن" },
+    { "value": "Jalan Bani Bu Ali",    "en": "Jalan Bani Bu Ali",    "ar": "جعلان بني بو علي" },
+    { "value": "Masirah",              "en": "Masirah",              "ar": "مصيرة" }
+  ]},
+  { "value": "Ad Dhahirah", "en": "Ad Dhahirah", "ar": "الظاهرة", "wilayats": [
+    { "value": "Ibri",   "en": "Ibri",   "ar": "عبري" },
+    { "value": "Yanqul", "en": "Yanqul", "ar": "ينقل" },
+    { "value": "Dank",   "en": "Dank",   "ar": "ضنك" }
+  ]},
+  { "value": "Al Wusta", "en": "Al Wusta", "ar": "الوسطى", "wilayats": [
+    { "value": "Haima",    "en": "Haima",    "ar": "هيما" },
+    { "value": "Mahout",   "en": "Mahout",   "ar": "محوت" },
+    { "value": "Al Duqm",  "en": "Al Duqm",  "ar": "الدقم" },
+    { "value": "Al Jazer", "en": "Al Jazer", "ar": "الجازر" }
+  ]}
+]

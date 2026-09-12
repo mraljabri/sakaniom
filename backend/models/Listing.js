@@ -6,7 +6,8 @@ const listingSchema = new mongoose.Schema({
   title:         { type: String, required: true, trim: true },
   description:   { type: String, default: '' },
   property_type: { type: String, required: true },
-  city:          { type: String, required: true, index: true },
+  governorate:   { type: String, default: '', index: true },
+  city:          { type: String, required: true, index: true },   // wilayat
   neighborhood:  { type: String, default: '' },
   price:         { type: Number, required: true, index: true },
   price_period:  { type: String, enum: ['month', 'week', 'day'], default: 'month' },

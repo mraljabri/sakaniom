@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import LocationPicker from '../components/LocationPicker';
 import { useLanguage } from '../contexts/LanguageContext';
 
 function Section({ title, children }) {
@@ -15,7 +16,7 @@ function Section({ title, children }) {
 
 export default function CreateSaleListingPage() {
   const { user } = useAuth();
-  const { t, CITIES, TYPES, FURNISHED_OPTIONS, OWNERSHIP_TYPES, SELLER_TYPES } = useLanguage();
+  const { t, TYPES, FURNISHED_OPTIONS, OWNERSHIP_TYPES, SELLER_TYPES } = useLanguage();
   const navigate = useNavigate();
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState('');
@@ -25,7 +26,7 @@ export default function CreateSaleListingPage() {
   const [videos, setVideos]           = useState([]);
 
   const [form, setForm] = useState({
-    title: '', description: '', property_type: 'Apartment', city: 'Muscat',
+    title: '', description: '', property_type: 'Apartment', governorate: '', city: '',
     neighborhood: '', price: '', bedrooms: '1', bathrooms: '1',
     area_sqm: '', furnished: 'unfurnished',
     ownership_type: '', seller_type: '',
@@ -117,13 +118,12 @@ export default function CreateSaleListingPage() {
         {/* Location */}
         <Section title={t('section_location')}>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="label">{t('field_city')} *</label>
-              <select className="input" value={form.city} onChange={set('city')} required>
-                {CITIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
+            <div className="col-span-2">
+              <LocationPicker mode="form" required stacked={false}
+                governorate={form.governorate} city={form.city}
+                onChange={loc => setForm(f => ({ ...f, ...loc }))} />
             </div>
-            <div>
+            <div className="col-span-2">
               <label className="label">{t('field_neighborhood')}</label>
               <input className="input" type="text" placeholder={t('field_neighborhood_ph')} value={form.neighborhood} onChange={set('neighborhood')} />
             </div>

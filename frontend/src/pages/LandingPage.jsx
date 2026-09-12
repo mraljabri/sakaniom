@@ -2,21 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import ListingCard from '../components/ListingCard';
+import LocationPicker from '../components/LocationPicker';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const { t, lang, CITIES, TYPES } = useLanguage();
+  const { t, lang } = useLanguage();
   const [rentListings, setRentListings]   = useState([]);
   const [saleListings, setSaleListings]   = useState([]);
-  const [quickCity, setQuickCity]     = useState('');
+  const [quickLoc, setQuickLoc]       = useState({ governorate: '', city: '' });
   const [quickSearch, setQuickSearch] = useState('');
   const [quickMode, setQuickMode]     = useState('rent');
 
   const runQuickSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (quickCity)   params.set('city', quickCity);
+    if (quickLoc.governorate) params.set('governorate', quickLoc.governorate);
+    if (quickLoc.city)        params.set('city', quickLoc.city);
     if (quickSearch) params.set('search', quickSearch.trim());
     navigate(`${quickMode === 'sale' ? '/buy' : '/listings'}?${params.toString()}`);
   };
@@ -61,11 +63,11 @@ export default function LandingPage() {
                 {t('nav_buy')}
               </button>
             </div>
-            <select value={quickCity} onChange={e => setQuickCity(e.target.value)}
-              className="flex-shrink-0 sm:w-44 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
-              <option value="">{t('hero_all_cities')}</option>
-              {CITIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-            </select>
+            <div className="flex-shrink-0 sm:w-[22rem] text-start">
+              <LocationPicker mode="filter" labels={false} stacked={false}
+                selectClass="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                governorate={quickLoc.governorate} city={quickLoc.city} onChange={setQuickLoc} />
+            </div>
             <input type="text" value={quickSearch} onChange={e => setQuickSearch(e.target.value)}
               placeholder={t('filter_keyword_ph')}
               className="flex-1 min-w-0 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500" />

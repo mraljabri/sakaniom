@@ -27,6 +27,15 @@ const translations = {
     btn_cancel: 'Cancel',
     filter_show_results: 'Show results',
 
+    // Location picker (governorate → wilayat)
+    field_governorate: 'Governorate',
+    field_wilayat: 'Wilayat / City',
+    select_governorate: '— Select governorate —',
+    select_wilayat: '— Select wilayat —',
+    filter_all_governorates: 'All Governorates',
+    filter_all_wilayats: 'All of {g}',
+    pick_governorate_first: 'Choose a governorate first',
+
     // Landing
     hero_badge: 'Oman\'s Real Estate Platform',
     hero_title1: 'Rent or Buy Property',
@@ -378,6 +387,15 @@ const translations = {
     post_sheet_title: 'ماذا تريد أن تنشر؟',
     btn_cancel: 'إلغاء',
     filter_show_results: 'عرض النتائج',
+
+    // Location picker (governorate → wilayat)
+    field_governorate: 'المحافظة',
+    field_wilayat: 'الولاية / المدينة',
+    select_governorate: '— اختر المحافظة —',
+    select_wilayat: '— اختر الولاية —',
+    filter_all_governorates: 'جميع المحافظات',
+    filter_all_wilayats: 'كل ولايات {g}',
+    pick_governorate_first: 'اختر المحافظة أولاً',
 
     // Landing
     hero_badge: 'منصة عُمان العقارية',

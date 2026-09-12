@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import LocationPicker from '../components/LocationPicker';
 import { useLanguage } from '../contexts/LanguageContext';
 
 // Section must be outside the component to avoid re-mount on every keystroke
@@ -16,7 +17,7 @@ function Section({ title, children }) {
 
 export default function CreateListingPage() {
   const { user } = useAuth();
-  const { t, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
+  const { t, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +25,7 @@ export default function CreateListingPage() {
   const [videoNames, setVideoNames] = useState([]);
 
   const [form, setForm] = useState({
-    title: '', description: '', property_type: 'Apartment', city: 'Muscat',
+    title: '', description: '', property_type: 'Apartment', governorate: '', city: '',
     neighborhood: '', price: '', price_period: 'month', bedrooms: '1', bathrooms: '1',
     area_sqm: '', furnished: 'unfurnished', contract_period: '',
     family_status: '', payment_method: '',
@@ -114,13 +115,12 @@ export default function CreateListingPage() {
 
         <Section title={t('section_location')}>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="label">{t('field_city')} *</label>
-              <select className="input" value={form.city} onChange={set('city')} required>
-                {CITIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
+            <div className="col-span-2">
+              <LocationPicker mode="form" required stacked={false}
+                governorate={form.governorate} city={form.city}
+                onChange={loc => setForm(f => ({ ...f, ...loc }))} />
             </div>
-            <div>
+            <div className="col-span-2">
               <label className="label">{t('field_neighborhood')}</label>
               <input className="input" type="text" placeholder={t('field_neighborhood_ph')} value={form.neighborhood} onChange={set('neighborhood')} />
             </div>

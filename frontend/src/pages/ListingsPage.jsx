@@ -3,16 +3,18 @@ import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ListingCard from '../components/ListingCard';
+import LocationPicker from '../components/LocationPicker';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function ListingsPage() {
   const [searchParams] = useSearchParams();
-  const { t, CITIES, TYPES, FURNISHED_OPTIONS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
+  const { t, TYPES, FURNISHED_OPTIONS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [filters, setFilters] = useState({
+    governorate: searchParams.get('governorate') || '',
     city: searchParams.get('city') || '',
     property_type: searchParams.get('property_type') || '',
     bedrooms: searchParams.get('bedrooms') || '',
@@ -47,7 +49,7 @@ export default function ListingsPage() {
   }, [fetchListings]);
 
   const setFilter = (key, val) => setFilters(f => ({ ...f, [key]: val }));
-  const clearFilters = () => setFilters({ city: '', property_type: '', bedrooms: '', bathrooms: '', min_price: '', max_price: '', furnished: '', contract_period: '', family_status: '', payment_method: '', search: '', sort: 'newest' });
+  const clearFilters = () => setFilters({ governorate: '', city: '', property_type: '', bedrooms: '', bathrooms: '', min_price: '', max_price: '', furnished: '', contract_period: '', family_status: '', payment_method: '', search: '', sort: 'newest' });
   const activeCount = Object.entries(filters).filter(([k, v]) => v && k !== 'sort').length;
 
   const countLabel = loading
@@ -71,13 +73,9 @@ export default function ListingsPage() {
         <label className="label">{t('filter_keyword')}</label>
         <input className="input text-sm" type="text" placeholder={t('filter_keyword_ph')} value={filters.search} onChange={e => setFilter('search', e.target.value)} />
       </div>
-      <div>
-        <label className="label">{t('filter_city')}</label>
-        <select className="input text-sm" value={filters.city} onChange={e => setFilter('city', e.target.value)}>
-          <option value="">{t('hero_all_cities')}</option>
-          {CITIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-        </select>
-      </div>
+      <LocationPicker mode="filter" selectClass="input text-sm"
+        governorate={filters.governorate} city={filters.city}
+        onChange={({ governorate, city }) => setFilters(f => ({ ...f, governorate, city }))} />
       <div>
         <label className="label">{t('filter_type')}</label>
         <div className="flex flex-wrap gap-2">

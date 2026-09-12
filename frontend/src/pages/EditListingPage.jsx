@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import LocationPicker from '../components/LocationPicker';
 import { useLanguage } from '../contexts/LanguageContext';
 import { mediaUrl, PLACEHOLDER } from '../utils/media';
 
@@ -15,7 +16,7 @@ function Section({ title, children }) {
 
 export default function EditListingPage() {
   const { id } = useParams();
-  const { t, CITIES, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
+  const { t, governorateOf, TYPES, FURNISHED_OPTIONS, PRICE_PERIODS, CONTRACT_OPTIONS, FAMILY_OPTIONS, PAYMENT_OPTIONS } = useLanguage();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -27,7 +28,7 @@ export default function EditListingPage() {
   const [newVideos, setNewVideos] = useState([]);
 
   const [form, setForm] = useState({
-    title: '', description: '', property_type: 'Apartment', city: 'Muscat',
+    title: '', description: '', property_type: 'Apartment', governorate: '', city: '',
     neighborhood: '', price: '', price_period: 'month', bedrooms: '1', bathrooms: '1',
     area_sqm: '', furnished: 'unfurnished', contact_name: '', contact_phone: '', contact_email: '',
     show_email: false,
@@ -41,7 +42,9 @@ export default function EditListingPage() {
           title: l.title || '',
           description: l.description || '',
           property_type: l.property_type || 'Apartment',
-          city: l.city || 'Muscat',
+          // Older listings pre-date the governorate field; derive it from the wilayat.
+          governorate: l.governorate || governorateOf(l.city),
+          city: l.city || '',
           neighborhood: l.neighborhood || '',
           price: l.price || '',
           price_period: l.price_period || 'month',
@@ -144,13 +147,12 @@ export default function EditListingPage() {
 
         <Section title={t('section_location')}>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="label">{t('field_city')} *</label>
-              <select className="input" value={form.city} onChange={set('city')} required>
-                {CITIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
+            <div className="col-span-2">
+              <LocationPicker mode="form" required stacked={false}
+                governorate={form.governorate} city={form.city}
+                onChange={loc => setForm(f => ({ ...f, ...loc }))} />
             </div>
-            <div>
+            <div className="col-span-2">
               <label className="label">{t('field_neighborhood')}</label>
               <input className="input" type="text" placeholder={t('field_neighborhood_ph')} value={form.neighborhood} onChange={set('neighborhood')} />
             </div>
