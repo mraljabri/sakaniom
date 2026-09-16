@@ -127,6 +127,18 @@
   }
   .action-sheet-cancel { @apply press w-full bg-white rounded-2xl py-4 text-center text-[17px] font-semibold text-primary-600; }
 
+  /* Landing hero: four Oman photos crossfading with a slow Ken Burns push.
+     Each slide is visible for a quarter of the 28s cycle. */
+  .hero-slides img {
+    @apply absolute inset-0 w-full h-full object-cover opacity-0;
+    animation: hero-slide 28s ease-in-out infinite;
+    will-change: opacity, transform;
+  }
+  .hero-slides img:nth-child(2) { animation-delay: 7s; }
+  .hero-slides img:nth-child(3) { animation-delay: 14s; }
+  .hero-slides img:nth-child(4) { animation-delay: 21s; }
+  .hero-text { text-shadow: 0 2px 12px rgba(0,0,0,.45); }
+
   /* Route transition. No fill-mode on purpose: a filled transform would make
      this wrapper the containing block for position:fixed descendants (sheets,
      modals), pinning them to the page instead of the viewport. */
@@ -136,8 +148,17 @@
 @keyframes fade-in  { from { opacity: 0 } to { opacity: 1 } }
 @keyframes sheet-up { from { transform: translateY(100%) } to { transform: translateY(0) } }
 @keyframes page-in  { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+@keyframes hero-slide {
+  0%   { opacity: 0; transform: scale(1);    }
+  6%   { opacity: 1; }
+  25%  { opacity: 1; }
+  31%  { opacity: 0; transform: scale(1.08); }
+  100% { opacity: 0; transform: scale(1.08); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .page-enter, .sheet, .action-sheet, .sheet-backdrop { animation: none; }
   .press { transition: none; }
+  .hero-slides img { animation: none; }
+  .hero-slides img:first-child { opacity: 1; }
 }

@@ -3,7 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import ListingCard from '../components/ListingCard';
 import LocationPicker from '../components/LocationPicker';
+import PhotoBanner from '../components/PhotoBanner';
 import { useLanguage } from '../contexts/LanguageContext';
+import { HERO_SLIDES, cardRent, cardBuy, ctaSalalah } from '../assets/oman';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -33,13 +35,14 @@ export default function LandingPage() {
   return (
     <div>
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative bg-gradient-to-br from-primary-800 via-primary-700 to-primary-600 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-400 rounded-full blur-3xl" />
+      <section className="relative bg-primary-900 text-white overflow-hidden">
+        {/* Crossfading Oman scenery: Grand Mosque, Wahiba Sands, Wadi Shab, Musandam */}
+        <div className="hero-slides absolute inset-0" aria-hidden>
+          {HERO_SLIDES.map((src, i) => <img key={src} src={src} alt="" loading={i ? 'lazy' : 'eager'} />)}
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/55 via-primary-900/40 to-primary-900/75" />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 text-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 text-center hero-text">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
             {t('hero_badge')}
@@ -84,7 +87,10 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
             {/* Rent card */}
             <Link to="/listings"
-              className="press group bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:border-white/60 rounded-3xl p-6 sm:p-8 text-start hover:scale-[1.02]">
+              className="press group relative overflow-hidden border-2 border-white/30 hover:border-white/60 rounded-3xl p-6 sm:p-8 text-start hover:scale-[1.02]">
+              <img src={cardRent} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 via-primary-900/60 to-primary-900/30" />
+              <div className="relative">
               <div className="w-14 h-14 bg-primary-500 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary-400 transition-colors">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -98,11 +104,15 @@ export default function LandingPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </span>
+              </div>
             </Link>
 
             {/* Buy card */}
             <Link to="/buy"
-              className="press group bg-yellow-400/10 hover:bg-yellow-400/20 backdrop-blur-sm border-2 border-yellow-400/30 hover:border-yellow-400/70 rounded-3xl p-6 sm:p-8 text-start hover:scale-[1.02]">
+              className="press group relative overflow-hidden border-2 border-yellow-400/30 hover:border-yellow-400/70 rounded-3xl p-6 sm:p-8 text-start hover:scale-[1.02]">
+              <img src={cardBuy} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-gray-900/30" />
+              <div className="relative">
               <div className="w-14 h-14 bg-yellow-400 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-yellow-300 transition-colors">
                 <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -116,6 +126,7 @@ export default function LandingPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </span>
+              </div>
             </Link>
           </div>
         </div>
@@ -214,8 +225,8 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────── */}
-      <section className="bg-gradient-to-r from-primary-700 to-primary-600 py-16 text-white text-center">
-        <div className="max-w-3xl mx-auto px-4">
+      <PhotoBanner src={ctaSalalah} className="py-16 text-white text-center" overlay="from-primary-900/85 via-primary-900/70 to-primary-900/60">
+        <div className="max-w-3xl mx-auto px-4 hero-text">
           <h2 className="text-3xl font-bold mb-4">{t('cta_title')}</h2>
           <p className="text-white/80 mb-8 text-lg">{t('cta_sub')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -227,14 +238,17 @@ export default function LandingPage() {
             </Link>
           </div>
         </div>
-      </section>
+      </PhotoBanner>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8 text-center text-sm">
         <p>{t('footer').replace('{year}', new Date().getFullYear())}</p>
-        <p className="mt-2">
+        <p className="mt-2 flex justify-center gap-4">
           <Link to="/terms" className="text-gray-500 hover:text-white transition-colors underline">
             {lang === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
+          </Link>
+          <Link to="/credits" className="text-gray-500 hover:text-white transition-colors underline">
+            {t('footer_credits')}
           </Link>
         </p>
       </footer>

@@ -15,6 +15,7 @@ import EditListingPage from './pages/EditListingPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import TermsPage from './pages/TermsPage';
+import CreditsPage from './pages/CreditsPage';
 import LandlordPage from './pages/LandlordPage';
 import SaleListingsPage from './pages/SaleListingsPage';
 import CreateSaleListingPage from './pages/CreateSaleListingPage';
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/credits" element={<CreditsPage />} />
           <Route path="/landlord/:id" element={<LandlordPage />} />
           <Route path="/buy" element={<SaleListingsPage />} />
           <Route path="/sell-listing" element={<ProtectedRoute><CreateSaleListingPage /></ProtectedRoute>} />

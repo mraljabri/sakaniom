@@ -36,6 +36,11 @@ const translations = {
     filter_all_wilayats: 'All of {g}',
     pick_governorate_first: 'Choose a governorate first',
 
+    // Photo credits
+    footer_credits: 'Photo credits',
+    credits_title: 'Photo Credits',
+    credits_intro: 'The scenery of Oman shown across SakaniOM comes from Wikimedia Commons under Creative Commons licences. Thank you to the photographers.',
+
     // Landing
     hero_badge: 'Oman\'s Real Estate Platform',
     hero_title1: 'Rent or Buy Property',
@@ -396,6 +401,11 @@ const translations = {
     filter_all_governorates: 'جميع المحافظات',
     filter_all_wilayats: 'كل ولايات {g}',
     pick_governorate_first: 'اختر المحافظة أولاً',
+
+    // Photo credits
+    footer_credits: 'حقوق الصور',
+    credits_title: 'حقوق الصور',
+    credits_intro: 'مناظر عُمان المعروضة في سكني عُمان مأخوذة من ويكيميديا كومنز بموجب تراخيص المشاع الإبداعي. شكراً للمصورين.',
 
     // Landing
     hero_badge: 'منصة عُمان العقارية',

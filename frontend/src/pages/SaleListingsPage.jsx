@@ -4,7 +4,9 @@ import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ListingCard from '../components/ListingCard';
 import LocationPicker from '../components/LocationPicker';
+import PhotoBanner from '../components/PhotoBanner';
 import { useLanguage } from '../contexts/LanguageContext';
+import { headerBuy } from '../assets/oman';
 
 export default function SaleListingsPage() {
   const [searchParams] = useSearchParams();
@@ -156,15 +158,16 @@ export default function SaleListingsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Stacks on narrow phones so the title can't collide with the controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">{t('sale_badge')}</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('page_buy_title')}</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{countLabel}</p>
+      {/* Photo header (Jebel Akhdar terraces) */}
+      <PhotoBanner src={headerBuy} className="rounded-3xl mb-5 min-h-[9rem] sm:min-h-[11rem] flex items-end"
+        overlay="from-emerald-950/85 via-emerald-950/50 to-emerald-950/25">
+        <div className="p-5 sm:p-7 text-white hero-text">
+          <span className="inline-block bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wide mb-2">{t('sale_badge')}</span>
+          <h1 className="text-2xl sm:text-3xl font-bold">{t('page_buy_title')}</h1>
+          <p className="text-white/80 text-sm mt-0.5">{countLabel}</p>
         </div>
+      </PhotoBanner>
+      <div className="flex items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3 flex-shrink-0">
           <select value={filters.sort} onChange={e => setFilter('sort', e.target.value)}
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">

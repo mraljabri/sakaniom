@@ -4,7 +4,9 @@ import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ListingCard from '../components/ListingCard';
 import LocationPicker from '../components/LocationPicker';
+import PhotoBanner from '../components/PhotoBanner';
 import { useLanguage } from '../contexts/LanguageContext';
+import { headerRent } from '../assets/oman';
 
 export default function ListingsPage() {
   const [searchParams] = useSearchParams();
@@ -166,12 +168,15 @@ export default function ListingsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Stacks on narrow phones so the title can't collide with the controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900">{t('page_listings_title')}</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{countLabel}</p>
+      {/* Photo header (Bimmah Sinkhole) — stacks on narrow phones so the
+          title can't collide with the controls */}
+      <PhotoBanner src={headerRent} className="rounded-3xl mb-5 min-h-[9rem] sm:min-h-[11rem] flex items-end">
+        <div className="p-5 sm:p-7 text-white hero-text">
+          <h1 className="text-2xl sm:text-3xl font-bold">{t('page_listings_title')}</h1>
+          <p className="text-white/80 text-sm mt-0.5">{countLabel}</p>
         </div>
+      </PhotoBanner>
+      <div className="flex items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3 flex-shrink-0">
           <select value={filters.sort} onChange={e => setFilter('sort', e.target.value)}
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
