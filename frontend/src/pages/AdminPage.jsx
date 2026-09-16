@@ -8,18 +8,41 @@ export default function AdminPage() {
   const [tab, setTab] = useState('listings');
   const [listings, setListings] = useState([]);
   const [users, setUsers] = useState([]);
+  const [feedback, setFeedback] = useState([]);
+  const [verifications, setVerifications] = useState([]);
+  const [notes, setNotes] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       axios.get('/api/admin/listings'),
       axios.get('/api/admin/users'),
-    ]).then(([l, u]) => {
+      axios.get('/api/feedback'),
+      axios.get('/api/verification'),
+    ]).then(([l, u, f, v]) => {
       setListings(l.data);
       setUsers(u.data);
+      setFeedback(f.data);
+      setVerifications(v.data);
     }).catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const setFeedbackStatus = async (id, status) => {
+    try {
+      await axios.patch(`/api/feedback/${id}`, { status });
+      setFeedback(fs => fs.map(f => f._id === id ? { ...f, status } : f));
+    } catch (err) { alert(err.response?.data?.error || 'Failed to update.'); }
+  };
+
+  const reviewVerification = async (id, status) => {
+    if (status === 'rejected' && !window.confirm('Reject this verification?')) return;
+    try {
+      await axios.patch(`/api/verification/${id}`, { status, note: notes[id] || '' });
+      setVerifications(vs => vs.map(v => v._id === id ? { ...v, status, reviewNote: notes[id] || '' } : v));
+      setUsers(us => us.map(u => u._id === verifications.find(v => v._id === id)?.userId ? { ...u, identityStatus: status } : u));
+    } catch (err) { alert(err.response?.data?.error || 'Failed to update.'); }
+  };
 
   const deleteListing = async (id, title) => {
     if (!window.confirm(t('admin_confirm_delete_listing'))) return;
@@ -95,7 +118,79 @@ export default function AdminPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'users' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
           {t('admin_users')} ({users.length})
         </button>
+        <button onClick={() => setTab('feedback')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'feedback' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+          {t('admin_feedback')} ({feedback.filter(f => f.status === 'open').length})
+        </button>
+        <button onClick={() => setTab('verifications')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'verifications' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+          {t('admin_verifications')} ({verifications.filter(v => v.status === 'pending').length})
+        </button>
       </div>
+
+      {/* Feedback */}
+      {tab === 'feedback' && (
+        <div className="space-y-3">
+          {feedback.length === 0 && <p className="card text-center text-gray-400 py-8">{t('admin_no_feedback')}</p>}
+          {feedback.map(f => (
+            <div key={f._id} className={`card p-5 ${f.status === 'resolved' ? 'opacity-70' : ''}`}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`badge ${f.type === 'complaint' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>{f.type}</span>
+                    <span className={`badge ${f.status === 'resolved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>{f.status}</span>
+                    <span className="text-xs text-gray-400">{new Date(f.createdAt).toLocaleString()}</span>
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mt-2">{f.subject}</h3>
+                  <p className="text-sm text-gray-500">{f.userName} · <a href={`mailto:${f.userEmail}`} className="hover:underline">{f.userEmail}</a></p>
+                </div>
+                <button onClick={() => setFeedbackStatus(f._id, f.status === 'open' ? 'resolved' : 'open')}
+                  className={`text-xs px-3 py-1.5 rounded-lg font-medium ${f.status === 'open' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                  {f.status === 'open' ? t('admin_resolve') : t('admin_reopen')}
+                </button>
+              </div>
+              <p className="text-sm text-gray-700 mt-3 whitespace-pre-wrap">{f.message}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Verifications */}
+      {tab === 'verifications' && (
+        <div className="space-y-3">
+          {verifications.length === 0 && <p className="card text-center text-gray-400 py-8">{t('admin_no_verifications')}</p>}
+          {verifications.map(v => (
+            <div key={v._id} className="card p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div>
+                  <h3 className="font-semibold text-gray-900">{v.userName}</h3>
+                  <p className="text-sm text-gray-500">{v.userEmail} · {new Date(v.createdAt).toLocaleString()}</p>
+                </div>
+                <span className={`badge ${v.status === 'approved' ? 'bg-green-100 text-green-700' : v.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>{v.status}</span>
+              </div>
+              {v.status === 'pending' ? (
+                <>
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {[['ID front', v.idFrontUrl], ['ID back', v.idBackUrl], ['Selfie', v.selfieUrl]].map(([label, url]) => (
+                      <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="block">
+                        <img src={url} alt={label} className="w-full aspect-[4/3] object-cover rounded-xl border border-gray-200" />
+                        <p className="text-xs text-gray-500 text-center mt-1">{label}</p>
+                      </a>
+                    ))}
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input className="input text-sm flex-1" placeholder={t('admin_note_ph')} value={notes[v._id] || ''} onChange={e => setNotes(n => ({ ...n, [v._id]: e.target.value }))} />
+                    <button onClick={() => reviewVerification(v._id, 'approved')} className="btn-primary text-sm !bg-green-600 hover:!bg-green-700">{t('admin_approve')}</button>
+                    <button onClick={() => reviewVerification(v._id, 'rejected')} className="btn-danger text-sm">{t('admin_reject')}</button>
+                  </div>
+                </>
+              ) : (
+                v.reviewNote && <p className="text-sm text-gray-600">Note: {v.reviewNote}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Listings Table */}
       {tab === 'listings' && (
@@ -185,6 +280,7 @@ export default function AdminPage() {
                       <span className={`badge ${u.role === 'creator' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
                         {u.role}
                       </span>
+                      {u.identityStatus === 'approved' && <span className="badge bg-green-100 text-green-700 ms-1">✓ ID</span>}
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs">
                       {new Date(u.createdAt).toLocaleDateString()}

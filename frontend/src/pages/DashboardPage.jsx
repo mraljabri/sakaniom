@@ -32,13 +32,18 @@ export default function DashboardPage() {
     }
   };
 
+  const [identity, setIdentity] = useState(null);
+
   useEffect(() => {
     setLoading(true);
     axios.get('/api/listings/my')
       .then(r => setListings(r.data))
       .catch(() => setListings([]))
       .finally(() => setLoading(false));
+    axios.get('/api/verification/me').then(r => setIdentity(r.data.identityStatus)).catch(() => {});
   }, []);
+
+  const identityStyle = { approved: 'bg-green-100 text-green-700', pending: 'bg-amber-100 text-amber-700', rejected: 'bg-red-100 text-red-700', none: 'bg-gray-100 text-gray-600' };
 
   const handleDelete = async (id, title) => {
     if (!window.confirm(t('dash_confirm', { title }))) return;
@@ -71,6 +76,17 @@ export default function DashboardPage() {
           <p className="text-gray-500 text-sm mt-1">
             {t('dash_welcome')} <span className="font-medium text-gray-700">{user?.name}</span>
           </p>
+          {identity && !user?.isAdmin && (
+            <p className="mt-2 flex items-center gap-2 text-sm">
+              <span className="text-gray-500">{t('dash_identity')}:</span>
+              <span className={`badge ${identityStyle[identity] || identityStyle.none}`}>
+                {identity === 'approved' && '✓ '}{t(`identity_${identity}`)}
+              </span>
+              {identity !== 'approved' && identity !== 'pending' && (
+                <Link to="/verify-identity" className="text-primary-600 font-semibold hover:underline">{t('dash_verify_link')} →</Link>
+              )}
+            </p>
+          )}
         </div>
         <Link to="/create-listing" className="btn-primary flex items-center gap-2 self-start sm:self-auto">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

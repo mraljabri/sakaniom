@@ -9,6 +9,8 @@ const authRoutes    = require('./routes/auth');
 const listingRoutes = require('./routes/listings');
 const adminRoutes   = require('./routes/admin');
 const ratingRoutes  = require('./routes/ratings');
+const feedbackRoutes     = require('./routes/feedback');
+const verificationRoutes = require('./routes/verification');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -42,6 +44,8 @@ app.use('/api/auth',     authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/admin',    adminRoutes);
 app.use('/api/ratings',  ratingRoutes);
+app.use('/api/feedback',     feedbackRoutes);
+app.use('/api/verification', verificationRoutes);
 app.get('/api/health',   (req, res) => res.json({ status: 'ok' }));
 
 // Dynamic XML sitemap — must be before the React catch-all

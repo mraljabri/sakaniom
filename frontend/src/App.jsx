@@ -16,6 +16,10 @@ import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import TermsPage from './pages/TermsPage';
 import CreditsPage from './pages/CreditsPage';
+import AboutPage from './pages/AboutPage';
+import FeedbackPage from './pages/FeedbackPage';
+import VerifyIdentityPage from './pages/VerifyIdentityPage';
+import VerificationGate from './components/VerificationGate';
 import LandlordPage from './pages/LandlordPage';
 import SaleListingsPage from './pages/SaleListingsPage';
 import CreateSaleListingPage from './pages/CreateSaleListingPage';
@@ -48,14 +52,17 @@ export default function App() {
           <Route path="/listings" element={<ListingsPage />} />
           <Route path="/listings/:id" element={<ListingDetailPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/create-listing" element={<ProtectedRoute><CreateListingPage /></ProtectedRoute>} />
+          <Route path="/create-listing" element={<ProtectedRoute><VerificationGate><CreateListingPage /></VerificationGate></ProtectedRoute>} />
+          <Route path="/verify-identity" element={<ProtectedRoute><VerifyIdentityPage /></ProtectedRoute>} />
+          <Route path="/feedback" element={<ProtectedRoute><FeedbackPage /></ProtectedRoute>} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/credits" element={<CreditsPage />} />
           <Route path="/landlord/:id" element={<LandlordPage />} />
           <Route path="/buy" element={<SaleListingsPage />} />
-          <Route path="/sell-listing" element={<ProtectedRoute><CreateSaleListingPage /></ProtectedRoute>} />
+          <Route path="/sell-listing" element={<ProtectedRoute><VerificationGate><CreateSaleListingPage /></VerificationGate></ProtectedRoute>} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/verify-success" element={<VerifySuccessPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

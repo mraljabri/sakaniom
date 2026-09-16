@@ -6,6 +6,8 @@ const cloudinary = require('cloudinary').v2;
 const User = require('../models/User');
 const Listing = require('../models/Listing');
 const Rating = require('../models/Rating');
+const Feedback = require('../models/Feedback');
+const Verification = require('../models/Verification');
 const { JWT_SECRET, authenticateToken } = require('../middleware/auth');
 
 // Configured here as well as in the listings router so account deletion does
@@ -24,7 +26,7 @@ function signToken(user) {
 }
 
 function userPayload(user) {
-  return { id: user._id, name: user.name, email: user.email, role: user.role, isAdmin: user.isAdmin };
+  return { id: user._id, name: user.name, email: user.email, role: user.role, isAdmin: user.isAdmin, identityStatus: user.identityStatus || 'none' };
 }
 
 // POST /api/auth/signup
@@ -99,6 +101,11 @@ router.delete('/me', authenticateToken, async (req, res) => {
 
     await Listing.deleteMany({ creatorId: user._id });
     await Rating.deleteMany({ $or: [{ landlordId: user._id }, { raterId: user._id }] });
+    await Feedback.deleteMany({ userId: user._id });
+    const idDocs = await Verification.find({ userId: user._id });
+    await Promise.allSettled(idDocs.flatMap(v => [v.idFrontId, v.idBackId, v.selfieId])
+      .map(pid => cloudinary.uploader.destroy(pid, { type: 'authenticated', resource_type: 'image' })));
+    await Verification.deleteMany({ userId: user._id });
     await user.deleteOne();
 
     res.json({ message: 'Your account and all associated data have been permanently deleted.' });

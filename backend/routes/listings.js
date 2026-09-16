@@ -4,7 +4,7 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 const Listing = require('../models/Listing');
-const { authenticateToken, requireCreator } = require('../middleware/auth');
+const { authenticateToken, requireCreator, requireVerified } = require('../middleware/auth');
 const { wilayatsOf, governorateOf } = require('../data/locations');
 
 // Configure Cloudinary
@@ -129,8 +129,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST create listing
-router.post('/', authenticateToken, requireCreator,
+// POST create listing — identity must be verified first
+router.post('/', authenticateToken, requireCreator, requireVerified,
   upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'videos', maxCount: 2 }]),
   async (req, res) => {
     const { title, description, property_type, city, neighborhood, price, price_period, bedrooms, bathrooms, area_sqm, furnished, contract_period, family_status, payment_method, listing_purpose, ownership_type, seller_type, contact_name, contact_phone, contact_email, show_email } = req.body;

@@ -7,7 +7,9 @@ const userSchema = new mongoose.Schema({
   phone:              { type: String, default: null },
   role:               { type: String, enum: ['creator', 'user'], default: 'creator' },
   isAdmin:            { type: Boolean, default: false },
-  isVerified:         { type: Boolean, default: false },
+  isVerified:         { type: Boolean, default: false },   // email
+  // Identity verification (ID card + live selfie), required before posting.
+  identityStatus:     { type: String, enum: ['none', 'pending', 'approved', 'rejected'], default: 'none' },
   verificationCode:   { type: String, default: null },
   verificationExpiry: { type: Date, default: null },
 }, { timestamps: true });

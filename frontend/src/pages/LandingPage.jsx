@@ -209,16 +209,17 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { step: '01', title: t('how_step1_title'), desc: t('how_step1_desc'), icon: '👤' },
-              { step: '02', title: t('how_step2_title'), desc: t('how_step2_desc'), icon: '🔍' },
-              { step: '03', title: t('how_step3_title'), desc: t('how_step3_desc'), icon: '📞' },
+              { step: '01', to: '/signup',   title: t('how_step1_title'), desc: t('how_step1_desc'), icon: '👤' },
+              { step: '02', to: '/feedback', title: t('how_step2_title'), desc: t('how_step2_desc'), icon: '💬' },
+              { step: '03', to: '/about',    title: t('how_step3_title'), desc: t('how_step3_desc'), icon: 'ℹ️' },
             ].map(item => (
-              <div key={item.step} className="relative p-6 rounded-2xl bg-gray-50 border border-gray-100">
+              <Link key={item.step} to={item.to}
+                className="press group relative block p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:border-primary-300 hover:bg-primary-50/40 transition-colors">
                 <span className="text-5xl font-extrabold text-gray-100 absolute top-4 end-6 select-none">{item.step}</span>
                 <span className="text-3xl mb-4 block">{item.icon}</span>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-700">{item.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
